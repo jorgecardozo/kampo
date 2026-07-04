@@ -1,0 +1,48 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-profilesfront-dev-101355-authRole",
+      "UnauthRoleArn": "arn:aws:iam::766433415648:role/amplify-profilesfront-dev-101355-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::766433415648:role/amplify-profilesfront-dev-101355-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-profilesfront-dev-101355-deployment",
+      "UnauthRoleName": "amplify-profilesfront-dev-101355-unauthRole",
+      "StackName": "amplify-profilesfront-dev-101355",
+      "StackId": "arn:aws:cloudformation:us-east-1:766433415648:stack/amplify-profilesfront-dev-101355/5c8c28f0-6e81-11ee-8792-0ad358cdb7d5",
+      "AmplifyAppId": "d1uk6lgo19mpa9"
+    },
+    "categories": {
+      "auth": {
+        "profilesfront38947153": {
+          "userPoolId": "us-east-1_Y1NKVArky",
+          "userPoolName": "UnifiedLoginDev",
+          "webClientId": "630eivt8tqm69p12rvmjtlvlk9",
+          "nativeClientId": "630eivt8tqm69p12rvmjtlvlk9"
+        }
+      }
+    }
+  },
+  "profiles": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-profilesfront-profiles-123023-authRole",
+      "UnauthRoleArn": "arn:aws:iam::766433415648:role/amplify-profilesfront-profiles-123023-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::766433415648:role/amplify-profilesfront-profiles-123023-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-profilesfront-profiles-123023-deployment",
+      "UnauthRoleName": "amplify-profilesfront-profiles-123023-unauthRole",
+      "StackName": "amplify-profilesfront-profiles-123023",
+      "StackId": "arn:aws:cloudformation:us-east-1:766433415648:stack/amplify-profilesfront-profiles-123023/0644e580-a596-11ee-a032-0afc57fdb231",
+      "AmplifyAppId": "d1uk6lgo19mpa9"
+    },
+    "categories": {
+      "auth": {
+        "profilesfront38947153": {
+          "userPoolId": "us-east-1_Y1NKVArky",
+          "userPoolName": "UnifiedLoginDev",
+          "webClientId": "630eivt8tqm69p12rvmjtlvlk9",
+          "nativeClientId": "630eivt8tqm69p12rvmjtlvlk9"
+        }
+      }
+    }
+  }
+}

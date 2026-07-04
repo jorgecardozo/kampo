@@ -1,0 +1,60 @@
+version: 0.2
+env:
+  parameter-store:
+    API_URL: '${PARAMETER_STORE_PREFIX}/API_URL'
+    NEXT_PUBLIC_API_KEY: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_API_KEY'
+    NEXT_PUBLIC_EXPIRATION_TIME: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_EXPIRATION_TIME'
+    NEXT_PUBLIC_CHECK_SESSION_TIME: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_CHECK_SESSION_TIME'
+    NEXT_PUBLIC_USER_POOL_ID: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_USER_POOL_ID'
+    NEXT_PUBLIC_APP_CLIENT_ID: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_APP_CLIENT_ID'
+    NEXT_PUBLIC_AUTHENTICATION_FLOW_TYPE: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_AUTHENTICATION_FLOW_TYPE'
+    NEXT_PUBLIC_AWS_REGION: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_AWS_REGION'
+    NEXT_PUBLIC_IS_MVP: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_IS_MVP'
+    NEXT_PUBLIC_DOMAIN: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_DOMAIN'
+    NEXT_PUBLIC_AMPLIFY_COOKIE_SECURE: '${PARAMETER_STORE_PREFIX}/NEXT_PUBLIC_AMPLIFY_COOKIE_SECURE'
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      # Install dependencies needed
+      #- yarn
+      #- npm install
+      #- npm install next -g
+
+      # Upgrade AWS CLI to the latest version
+      - pip install --upgrade awscli
+  pre_build:
+    commands:
+      # Build the react app to give an optimized production build
+      - pip3 install awscli --upgrade --user
+      - aws codeartifact login --tool npm --repository npm-sc --domain sc --domain-owner 014881332177 --region us-east-1
+      # - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain sc --domain-owner 014881332177 --region us-east-1 --query authorizationToken --output text`
+      # - aws codeartifact get-repository-endpoint --domain sc --domain-owner 014881332177 --repository npm-sc --format npm
+      # - npm config set registry=https://sc-014881332177.d.codeartifact.us-east-1.amazonaws.com/npm/npm-sc/
+      # - npm config set //sc-014881332177.d.codeartifact.us-east-1.amazonaws.com/npm/npm-sc/:_authToken=$CODEARTIFACT_AUTH_TOKEN
+      # - npm -d ping
+  build:
+    commands:
+      - npm install
+      - npm install --save-dev typescript
+      - npm install next -g
+      - echo "#variables de entorno obtenidas desde parameter store, en path $PARAMETER_STORE_PREFIX, durante tiempo de build" >.env
+      - echo API_URL=$API_URL >>.env
+      - echo NEXT_PUBLIC_API_KEY=$NEXT_PUBLIC_API_KEY >>.env
+      - echo NEXT_PUBLIC_EXPIRATION_TIME=$NEXT_PUBLIC_EXPIRATION_TIME >>.env
+      - echo NEXT_PUBLIC_CHECK_SESSION_TIME=$NEXT_PUBLIC_CHECK_SESSION_TIME >>.env
+      - echo NEXT_PUBLIC_USER_POOL_ID=$NEXT_PUBLIC_USER_POOL_ID >>.env
+      - echo NEXT_PUBLIC_APP_CLIENT_ID=$NEXT_PUBLIC_APP_CLIENT_ID >>.env
+      - echo NEXT_PUBLIC_AUTHENTICATION_FLOW_TYPE=$NEXT_PUBLIC_AUTHENTICATION_FLOW_TYPE >>.env
+      - echo NEXT_PUBLIC_AWS_REGION=$NEXT_PUBLIC_AWS_REGION >>.env
+      - echo NEXT_PUBLIC_IS_MVP=$NEXT_PUBLIC_IS_MVP >>.env
+      - echo NEXT_PUBLIC_DOMAIN=$NEXT_PUBLIC_DOMAIN >>.env
+      - echo NEXT_PUBLIC_AMPLIFY_COOKIE_SECURE=$NEXT_PUBLIC_AMPLIFY_COOKIE_SECURE >>.env
+      - npm run build
+artifacts:
+  files:
+    - '**/*'
+    - .ebextensions/**/*
+  exclude-paths:
+    - 'node_modules/**/*'

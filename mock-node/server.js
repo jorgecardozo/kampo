@@ -1,0 +1,778 @@
+/* eslint-disable */
+"use strict";
+
+let configFile = __dirname + "/config.json",
+  interfaceFolder = __dirname + "/dist";
+
+let express = require("express"),
+  app = express(),
+  router = express.Router(),
+  proxy = require("express-http-proxy"),
+  Url = require("url"),
+  fs = require("fs"),
+  path = require("path"),
+  bodyParser = require("body-parser"),
+  cookieParser = require("cookie-parser"),
+  rimraf = require("rimraf"),
+  winston = require("winston"),
+  SandCastle = require("sandcastle").SandCastle,
+  sandcastle = new SandCastle(),
+  async = require("async"),
+  config = require(configFile),
+  jwt = require("jsonwebtoken"),
+  expressJwt = require("express-jwt");
+app.use(
+  express.json({
+    limit: "50mb",
+  })
+);
+
+let argv = require("minimist")(process.argv.slice(2));
+
+if (argv.location) console.log("mocknode installation directory: ", __dirname);
+else if (argv.export) {
+  let fse = require("fs-extra"),
+    tmp_path = path.join(__dirname, "tmp"),
+    tar = require("tar-fs");
+
+  fse.emptyDirSync(tmp_path);
+  fse.copySync(__dirname + "/stubs", tmp_path + "/stubs");
+  fse.copySync(__dirname + "/config.json", tmp_path + "/config.json");
+  tar.pack(tmp_path).pipe(fs.createWriteStream("mocknode-config.tar"));
+  console.log("mocknode config has been exported to mocknode-config.tar");
+} else if (argv.import) {
+  let _tar = require("tar-fs");
+  fs.createReadStream(argv.import).pipe(_tar.extract(__dirname));
+  console.log("configuration has been imported");
+} else {
+  (function () {
+    // App starts
+    let port = process.env.PORT || argv.port || config.port;
+
+    // Support for v0.x
+    let assign = require("object-assign");
+
+    app.use(
+      bodyParser.urlencoded({
+        extended: false,
+      })
+    );
+    app.use(bodyParser.json());
+    app.use(cookieParser());
+    app.use(router);
+
+    let sleep = function sleep(milliseconds) {
+      let start = new Date().getTime();
+      for (let i = 0; i < 1e7; i++) {
+        if (new Date().getTime() - start > milliseconds) {
+          break;
+        }
+      }
+    };
+
+    let logger = {
+      changelog: new winston.Logger({
+        transports: [
+          new winston.transports.File({
+            name: "changelog",
+            filename: path.join(__dirname, "logs", "change.log"),
+          }),
+        ],
+      }),
+      accesslog: new winston.Logger({
+        transports: [
+          new winston.transports.File({
+            name: "accesslog",
+            filename: path.join(__dirname, "logs", "access.log"),
+          }),
+        ],
+      }),
+    };
+
+    // Global headers and gloabl delay
+    // currently this is only read from the config file
+    // TODO: buid and interface for this.
+    let globalHeaders = function globalHeaders(globalConfig) {
+      return function (req, res, next) {
+        Object.keys(globalConfig.headers).map(function (header) {
+          res.setHeader(header, globalConfig.headers[header]);
+        });
+        if (globalConfig.delay) sleep(globalConfig.delay);
+        return next();
+      };
+    };
+
+    // Returns a middleware which proxies to the target
+    // TODO: exception handling for targets which are wrong,
+    //       currently the proxy fails and breaks the server.
+    let assignNewProxy = function assignNewProxy(target) {
+      return proxy(target, {
+        proxyReqPathResolver: function forwardPath(req, res) {
+          return Url.parse(req.originalUrl).path;
+        },
+      });
+    };
+
+    // Filesystems dont allow '/' in the names of folders / files,
+    // Converting this character to a '!'
+    let encodeRoutePath = function encodeRoutePath(route) {
+      return route.replace(/\//g, "!");
+    };
+    let decodeRoutePath = function decodeRoutePath(route) {
+      return route.replace(/!/g, "/");
+    };
+
+    // Creators and assigners - subtle abstraction : These return middlewares
+    let createProxyRoute = function createProxyRoute(route, target) {
+      return router.use(route, assignNewProxy(target));
+    };
+
+    let createStubRoute = function createStubRoute(route, stub) {
+      return router.use(route, stubHandler(route, stub));
+    };
+
+    let createDynamicStubRoute = function createDynamicStubRoute(
+      route,
+      dynamicStub
+    ) {
+      return router.use(route, dynamicStubHandler(route, dynamicStub));
+    };
+
+    let dynamicStubHandler = function dynamicStubHandler(_route, _name) {
+      let dynamicObj = void 0;
+      configLoop: for (let i = 0; i < config.routes.length; i++) {
+        if (config.routes[i].route == _route) {
+          for (let j = 0; j < config.routes[i].dynamicStubs.length; j++) {
+            if (config.routes[i].dynamicStubs[j].name == _name) {
+              dynamicObj = config.routes[i].dynamicStubs[j];
+              break configLoop;
+            }
+          }
+        }
+      }
+      return dynamicStubRequestHandler(_route, dynamicObj);
+    };
+
+    // XXX: This should be a database of users :).
+    let users = [
+      {
+        id: 1,
+        username: "gonto",
+        password: "gonto",
+        lastToken: "undefined",
+      },
+    ];
+
+    // function que crea el token
+    // https://github.com/auth0/node-jsonwebtoken
+    function createToken() {
+      return jwt.sign(
+        {
+          id: 1,
+          username: "gonto",
+        },
+        "shhhhh",
+        {
+          expiresIn: "5s",
+        }
+      );
+    }
+
+    // Middleware which returns a stub
+    let stubHandler = function stubHandler(route, stub) {
+      return function (req, res, next) {
+        let options = {
+          dotfiles: "deny",
+          headers: {
+            Authorization: users[0].lastToken,
+            "x-timestamp": Date.now(),
+            "x-sent": true,
+          },
+        };
+
+        // if (req.baseUrl === '/notAuthorizedExample') {
+        //     return res.status(403).send({
+        //       respuesta: {
+        //         msg: 'lalala'
+        //       }
+        //     });
+        // }
+
+        // // login
+        // if(req.baseUrl === '/login') {
+        //   users[0].lastToken = createToken();
+        //   return res.status(201).send({
+        //     estadoRespuesta: 'OK',
+        //     respuesta:{
+        //       token: users[0].lastToken
+        //     }
+        //   });
+        // } else
+        // // refresh
+        // if(req.baseUrl === '/refresh') {
+        //   let token = req.get('Authorization');
+        //   jwt.verify(token, 'prendarios', function(err, decoded) {
+        //     if(err) {
+        //         return res.status(401).send({
+        //             message: 'User token is not valid'
+        //         });
+        //     }
+        //     let newToken = jwt.refreshToken(decoded);
+        //     res.set('Authorization', 'Bearer ' + newToken);
+        //     // res.set('Authorization', newToken);
+        //     return res.status(200).send({
+        //       estadoRespuesta: 'OK',
+        //       respuesta:{
+        //         msg: 'token refrescado'
+        //       }
+        //     });
+        //   });
+        // } else {
+        //   // revisar si el token expira o es invalido en cada request
+        //   let token = req.get('Authorization');
+        //   jwt.verify(token, 'prendarios', function(err, decoded) {
+        //     if (err) {
+        //       /*
+        //         err = {                         err = {
+        //           name: 'TokenExpiredError',      name: 'JsonWebTokenError',
+        //           message: 'jwt expired',         message: 'jwt malformed'
+        //           expiredAt: 1408621000          }
+        //         }
+        //       */
+        //      return res.status(401).send({
+        //        estadoRespuesta: 'Error',
+        //        respuesta:{
+        //          msg: 'token incorrecto o expirado :('
+        //        }
+        //      });
+        //     }
+        //   });
+        // }
+
+        return res.sendFile(
+          path.join(__dirname, "stubs", encodeRoutePath(route), stub),
+          options
+        );
+      };
+    };
+
+    // Middleware which handles the dynamic stubs conditions
+    // Uses sandcastle to execute evals on a node sanbox.
+    // The req object parameters are injected into the execution
+    // runtime, so the eval expressions can access the req object.
+    let dynamicStubRequestHandler = function dynamicStubRequestHandler(
+      _route,
+      _stub
+    ) {
+      return function (req, res) {
+        let returnedStub = _stub.defaultStub,
+          continueLoop = true,
+          count = 0;
+
+        if (_stub.conditions.length) {
+          async.whilst(
+            function () {
+              return count < _stub.conditions.length && continueLoop;
+            },
+            function (callback) {
+              let script = sandcastle.createScript(
+                "exports.main = function() {\n            try {\n              if (" +
+                  _stub.conditions[count].eval +
+                  ")\n                exit('" +
+                  _stub.conditions[count].stub +
+                  "')\n              else\n                exit(false)\n            } catch(e) {\n              exit(false)\n            }\n          }"
+              );
+
+              count++;
+
+              script.on("exit", function (err, output) {
+                if (output) {
+                  continueLoop = false;
+                  returnedStub = output;
+                }
+                callback();
+              });
+
+              script.run({
+                req: assign(
+                  {},
+                  {
+                    baseURL: req.baseURL,
+                    body: req.body,
+                    cookies: req.cookies,
+                    headers: req.headers,
+                    hostname: req.hostname,
+                    ip: req.ip,
+                    ips: req.ips,
+                    method: req.method,
+                    originalUrl: req.originalUrl,
+                    params: req.params,
+                    path: req.path,
+                    protocol: req.protocol,
+                    query: req.query,
+                    route: req.route,
+                    signedCookies: req.signedCookies,
+                    stale: req.stale,
+                    subdomains: req.subdomains,
+                    xhr: req.xhr,
+                  }
+                ),
+              });
+            },
+            function (err) {
+              res.sendFile(
+                path.join(
+                  __dirname,
+                  "stubs",
+                  encodeRoutePath(_route),
+                  returnedStub
+                )
+              );
+            }
+          );
+        } else {
+          res.sendFile(
+            path.join(__dirname, "stubs", encodeRoutePath(_route), returnedStub)
+          );
+        }
+      };
+    };
+
+    // Create and update a route
+    // TODO: RE-Implement this and make it pretty
+    let updateRoute = function updateRoute(_req) {
+      let matchCount = 0;
+      if (_req.old_route != _req.route) {
+        if (_req.old_route) deleteroute(_req.old_route);
+        delete _req.old_route;
+      } else {
+        delete _req.old_route;
+        let _iteratorNormalCompletion = true;
+        let _didIteratorError = false;
+        let _iteratorError = undefined;
+
+        try {
+          for (
+            let _iterator = router.stack[Symbol.iterator](), _step;
+            !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
+            _iteratorNormalCompletion = true
+          ) {
+            let layer = _step.value;
+
+            let match = _req.route.match(layer.regexp);
+            if (match && match[0] == _req.route) {
+              layer.handle =
+                _req.handle == "stub"
+                  ? stubHandler(_req.route, _req.stub)
+                  : _req.handle == "proxy"
+                  ? assignNewProxy(_req.proxy)
+                  : dynamicStubHandler(_req.route, _req.dynamicStub);
+              for (let i = 0; i < config.routes.length; i++) {
+                if (config.routes[i].route == _req.route) {
+                  config.routes[i] = assign({}, config.routes[i], _req);
+                }
+              }
+              matchCount++;
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+      }
+      if (matchCount == 0) {
+        if (_req.handle == "stub") {
+          createStubRoute(_req.route, _req.stub);
+        } else if (_req.handle == "proxy") {
+          createProxyRoute(_req.route, _req.proxy);
+        } else if (_req.handle == "dynamicStub") {
+          createDynamicStubRoute(_req.route, _req.dynamicStub);
+        }
+        config.routes.push(
+          assign({}, _req, {
+            stubs: [],
+            dynamicStubs: [],
+          })
+        );
+        let dir = path.join(__dirname, "stubs", encodeRoutePath(_req.route));
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+      }
+      fs.writeFile(
+        configFile,
+        JSON.stringify(config, null, 2),
+        function (err, result) {
+          if (err) console.log("error", err);
+        }
+      );
+    };
+
+    // Create and update for stubs
+    let updateStubs = function updateStubs(_req) {
+      let matchCount = 0;
+      routeLoop: for (let i = 0; i < config.routes.length; i++) {
+        if (config.routes[i].route == _req.route) {
+          for (let j = 0; j < config.routes[i].stubs.length; j++) {
+            if (
+              config.routes[i].stubs[j].name == _req.oldname ||
+              config.routes[i].stubs[j].name == _req.name
+            ) {
+              config.routes[i].stubs[j].name = _req.name;
+              config.routes[i].stubs[j].description = _req.description;
+              fs.writeFileSync(
+                path.join(
+                  __dirname,
+                  "stubs",
+                  encodeRoutePath(_req.route),
+                  _req.name
+                ),
+                _req.content
+              );
+              if (_req.oldname) {
+                fs.rename(
+                  path.join(
+                    __dirname,
+                    "stubs",
+                    encodeRoutePath(_req.route),
+                    _req.oldname
+                  ),
+                  path.join(
+                    __dirname,
+                    "stubs",
+                    encodeRoutePath(_req.route),
+                    _req.name
+                  ),
+                  function (err) {
+                    if (err) throw err;
+                    console.log("renamed complete");
+                  }
+                );
+              }
+              matchCount++;
+              break routeLoop;
+            }
+          }
+          if (matchCount == 0) {
+            fs.writeFile(
+              path.join(
+                __dirname,
+                "stubs",
+                encodeRoutePath(_req.route),
+                _req.name
+              ),
+              _req.content,
+              function (err, data) {
+                if (err) console.log("error", err);
+                console.log("creacion complete");
+              }
+            );
+            config.routes[i].stubs.push({
+              name: _req.name,
+              description: _req.description,
+            });
+          }
+        }
+      }
+      fs.writeFile(
+        configFile,
+        JSON.stringify(config, null, 2),
+        function (err, data) {
+          if (err) console.log("error", err);
+          console.log("creacion complete");
+        }
+      );
+    };
+
+    // Create and update for dynamic stubs, this is very similar
+    // to that of stubs but there is no file associated, only the
+    // config is updated.
+    let updateDynamicStubs = function updateDynamicStubs(_req) {
+      let req = assign({}, _req);
+      let matchCount = 0,
+        oldname = req.oldname,
+        route = req.route;
+      delete req.oldname;
+      delete req.route;
+      routeLoop: for (let i = 0; i < config.routes.length; i++) {
+        if (config.routes[i].route == route) {
+          for (let j = 0; j < config.routes[i].dynamicStubs.length; j++) {
+            if (
+              config.routes[i].dynamicStubs[j].name == oldname ||
+              config.routes[i].dynamicStubs[j].name == req.name
+            ) {
+              config.routes[i].dynamicStubs[j] = req;
+              matchCount++;
+              break routeLoop;
+            }
+          }
+          if (matchCount == 0) {
+            config.routes[i].dynamicStubs.push(req);
+          }
+        }
+      }
+      fs.writeFile(
+        configFile,
+        JSON.stringify(config, null, 2),
+        function (err, result) {
+          if (err) console.log("error", err);
+        }
+      );
+    };
+
+    // Delete a route:
+    // 1. Remove it from the router stack
+    // 2. Remote it from config
+    // 3. Delete the stubs/route folder
+    let deleteroute = function deleteroute(_route) {
+      let index = router.stack
+        .map(function (layer) {
+          return _route.match(layer.regexp);
+        })
+        .reduce(function (index, item, i) {
+          return !!item ? i : index;
+        }, 0);
+      if (index > -1) {
+        router.stack.splice(index, 1);
+        rimraf(
+          path.join(__dirname, "stubs", encodeRoutePath(_route)),
+          function () {}
+        );
+      }
+      let newRoutes = config.routes.filter(function (route) {
+        return route.route != _route;
+      });
+      config = assign(config, {
+        routes: newRoutes,
+      });
+      fs.writeFile(configFile, JSON.stringify(config, null, 2));
+    };
+
+    // Delete a stub:
+    // 1. Delete the file
+    // 2. Remove the entry from config file
+    let deletestub = function deletestub(_route, _stub) {
+      fs.unlinkSync(
+        path.join(__dirname, "stubs", encodeRoutePath(_route), _stub)
+      );
+
+      routeLoop: for (let i = 0; i < config.routes.length; i++) {
+        if (config.routes[i].route == _route) {
+          for (let j = 0; j < config.routes[i].stubs.length; j++) {
+            if (config.routes[i].stubs[j].name == _stub) {
+              config.routes[i].stubs.splice(j, 1);
+              break routeLoop;
+            }
+          }
+        }
+      }
+      fs.writeFile(configFile, JSON.stringify(config, null, 2));
+    };
+
+    // Delete a dynamic stub:
+    // 1. Remove the entry from config file
+    let deleteDynamicstub = function deleteDynamicstub(_route, _stub) {
+      routeLoop: for (let i = 0; i < config.routes.length; i++) {
+        if (config.routes[i].route == _route) {
+          for (let j = 0; j < config.routes[i].dynamicStubs.length; j++) {
+            if (config.routes[i].dynamicStubs[j].name == _stub) {
+              config.routes[i].dynamicStubs.splice(j, 1);
+              break routeLoop;
+            }
+          }
+        }
+      }
+      fs.writeFile(configFile, JSON.stringify(config, null, 2));
+    };
+
+    // Expects that the dynamic stub properties are updated
+    // checks if the route is using this dynamic stub and updates its layer.handle
+    let updateDynamicRoutes = function updateDynamicRoutes(
+      _route,
+      _dynamicStub
+    ) {
+      for (let i = 0; i < config.routes.length; i++) {
+        if (
+          _route == config.routes[i].route &&
+          _dynamicStub == config.routes[i].dynamicStub &&
+          "dynamicStub" == config.routes[i].handle
+        ) {
+          let _iteratorNormalCompletion2 = true;
+          let _didIteratorError2 = false;
+          let _iteratorError2 = undefined;
+
+          try {
+            for (
+              let _iterator2 = router.stack[Symbol.iterator](), _step2;
+              !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done);
+              _iteratorNormalCompletion2 = true
+            ) {
+              let layer = _step2.value;
+
+              let match = config.routes[i].route.match(layer.regexp);
+              if (match && match[0] == config.routes[i].route) {
+                layer.handle = dynamicStubHandler(_route, _dynamicStub);
+              }
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    let logRequest = function logRequest(_req, _type, _method) {
+      logger[_type][_method]({
+        route: _req.path,
+        query_strings: JSON.stringify(_req.query),
+        request_body: JSON.stringify(_req.body),
+        ip: _req.ip,
+      });
+    };
+
+    //Cors
+    router.use(function (req, res, next) {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization, Wil, isWebview"
+      );
+      next();
+    });
+
+    // Logs all requests which do not start with '/mocknode/'
+    // router.use('/', function (req, res, next) {
+    //   if (/^(?!\/mocknode\/)/.test(req.originalUrl) && /^(?!\/favicon.ico)/.test(req.originalUrl)) logRequest(req, 'accesslog', 'info');
+    //   next();
+    // });
+
+    // Logs requests that change the configuration of mocknode
+    // router.use('/mocknode/api', function (req, res, next) {
+    //   let logList = ['/modifyroute', '/deleteroute', '/modifystub', '/deletestub', '/modifydynamicstub', '/deletedynamicstub'];
+    //   if (logList.indexOf(req.path) > -1) logRequest(req, 'changelog', 'info');
+    //   next();
+    // });
+
+    router.use("/mocknode", express.static(interfaceFolder));
+    router.use("/mocknode/api/config", function (req, res) {
+      return res.json(config);
+    });
+
+    router.use("/mocknode/api/stubconfig", function (req, res) {
+      return res.json(stubConfig);
+    });
+
+    router.use("/mocknode/api/logs", function (req, res) {
+      res.sendFile(path.join(__dirname, "logs", req.query.name));
+    });
+
+    router.use("/mocknode/api/getstub", function (req, res) {
+      res.sendFile(
+        path.join(
+          __dirname,
+          "stubs",
+          encodeRoutePath(req.query.route),
+          req.query.name
+        )
+      );
+    });
+
+    router.use("/mocknode/api/modifyroute", function (req, res, next) {
+      updateRoute(req.body);
+      res.send({
+        success: true,
+      });
+    });
+
+    router.use("/mocknode/api/deleteroute", function (req, res, next) {
+      deleteroute(req.query.route);
+      res.send({
+        success: true,
+      });
+    });
+
+    router.use("/mocknode/api/modifystub", function (req, res) {
+      updateStubs(req.body);
+      res.send({
+        success: true,
+      });
+    });
+
+    router.use("/mocknode/api/deletestub", function (req, res) {
+      deletestub(req.query.route, req.query.name);
+      res.send({
+        success: true,
+      });
+    });
+
+    router.use("/mocknode/api/modifydynamicstub", function (req, res) {
+      updateDynamicStubs(req.body);
+      updateDynamicRoutes(req.body.route, req.body.name);
+      res.send({
+        success: true,
+      });
+    });
+
+    router.use("/mocknode/api/deletedynamicstub", function (req, res) {
+      deleteDynamicstub(req.query.route, req.query.name);
+      res.send({
+        success: true,
+      });
+    });
+
+    router.use(globalHeaders(config.global));
+
+    config.routes
+      .filter(function (configObj) {
+        return configObj.handle == "proxy";
+      })
+      .map(function (configObj) {
+        return createProxyRoute(configObj.route, configObj.proxy);
+      });
+
+    config.routes
+      .filter(function (configObj) {
+        return configObj.handle == "stub";
+      })
+      .map(function (configObj) {
+        return createStubRoute(configObj.route, configObj.stub);
+      });
+
+    config.routes
+      .filter(function (configObj) {
+        return configObj.handle == "dynamicStub";
+      })
+      .map(function (configObj) {
+        return createDynamicStubRoute(configObj.route, configObj.dynamicStub);
+      });
+
+    app.listen(port);
+    console.log("Mocknode started on port: " + port);
+    console.log(
+      "open 'http://localhost:" +
+        port +
+        "/mocknode' in your browser to configure mocknode"
+    );
+
+    // App ends
+  })();
+}

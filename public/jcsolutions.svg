@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <!-- Terminal window más grande -->
+  <rect x="20" y="30" width="360" height="240" rx="20" fill="#1A1A2E" stroke="#333"/>
+
+    <path d="M167.7,30 h192 a20,20 0 0 1 20,20 v35 h-359.2 v-35 a20,20 0 0 1 20,-20" fill="#16213E"/>
+  <!-- Círculos de control -->
+  <circle cx="40" cy="60" r="12" fill="#ff5f56"/>
+  <circle cx="70" cy="60" r="12" fill="#ffbd2e"/>
+  <circle cx="100" cy="60" r="12" fill="#27c93f"/>
+  
+  <!-- Cursor parpadeante -->
+  <rect x="42" y="139.9" width="4" height="50" fill="#00FFF0">
+    <animate attributeName="opacity" values="1;0;1" dur="1.5s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Texto -->
+  <text x="200" y="180" font-family="Consolas, monospace" font-size="50" font-weight="bold" text-anchor="middle">
+    <tspan fill="#FF00FF">JC</tspan><tspan fill="#00FFF0">Solutions</tspan>
+  </text>
+</svg>

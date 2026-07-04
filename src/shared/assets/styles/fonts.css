@@ -1,0 +1,41 @@
+@font-face {
+  font-family: 'SantanderText';
+  src: url('../fonts/SantanderTextW05-Regular.woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SantanderText';
+  src: url('../fonts/SantanderTextW05-Italic.woff2');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'SantanderText';
+  src: url('../fonts/SantanderTextW05-Light.woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SantanderText';
+  src: url('../fonts/SantanderTextW05-LightIt.woff2');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'SantanderText';
+  src: url('../fonts/SantanderTextW05-BoldItalic.woff2');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'SantanderText';
+  src: url('../fonts/SantanderTextW05-Bold.woff2');
+  font-weight: 700;
+  font-style: normal;
+}

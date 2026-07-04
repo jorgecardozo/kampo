@@ -1,0 +1,38 @@
+{
+  "port": 3000,
+  "routes": [
+    {
+      "route": "/test/",
+      "handle": "stub",
+      "proxy": "http://localhost:8080",
+      "stubs": [
+        {
+          "name": "testing.json",
+          "description": "test"
+        }
+      ],
+      "dynamicStubs": [],
+      "stub": "testing.json"
+    },
+    {
+      "route": "/genders/",
+      "handle": "stub",
+      "proxy": "http://localhost:8080",
+      "stubs": [
+        {
+          "name": "genders.json",
+          "description": "Gender list"
+        }
+      ],
+      "dynamicStubs": [],
+      "stub": "genders.json"
+    }
+  ],
+  "global": {
+    "delay": 0,
+    "headers": {
+      "Access-Control-Allow-Origin": "*",
+      "X-Powered-By": "mocknode"
+    }
+  }
+}

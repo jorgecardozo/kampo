@@ -1,0 +1,14 @@
+[
+  {
+    "id": 0,
+    "description": "Hombre"
+  },
+  {
+    "id": 1,
+    "description": "Mujer"
+  },
+  {
+    "id": 2,
+    "description": "No Binario"
+  }
+]

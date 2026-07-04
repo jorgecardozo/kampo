@@ -1,0 +1,90 @@
+  <svg
+        width="600"
+        height="600"
+        viewBox="0 0 600 600"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full max-w-xl p-8"
+      >
+        {/* Background Elements */}
+        <circle cx="300" cy="300" r="250" fill="#fff5f5" fillOpacity="0.2" />
+        <circle cx="300" cy="300" r="200" fill="#ffe3e3" fillOpacity="0.3" />
+
+        {/* Decorative Elements */}
+        <circle cx="120" cy="120" r="15" fill="#ffa8a8" />
+        <circle cx="480" cy="150" r="10" fill="#ff6b6b" />
+        <circle cx="500" cy="450" r="12" fill="#ffc9c9" />
+        <circle cx="150" cy="480" r="8" fill="#ff6b6b" />
+
+        {/* Shopping Cart */}
+        <g transform="translate(150, 200) scale(0.8)">
+          <path
+            d="M40 40H70L120 190H300L340 90H100"
+            stroke="#730000"
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+          <circle cx="140" cy="230" r="20" fill="#730000" />
+          <circle cx="280" cy="230" r="20" fill="#730000" />
+
+          {/* Products in Cart */}
+          <rect x="130" y="120" width="40" height="40" rx="5" fill="#ffa8a8" />
+          <rect x="180" y="130" width="30" height="30" rx="5" fill="#ff6b6b" />
+          <rect x="220" y="110" width="50" height="50" rx="5" fill="#ffc9c9" />
+        </g>
+
+        {/* Graph/Chart for Profit/Loss */}
+        <g transform="translate(320, 320)">
+          <rect x="0" y="0" width="180" height="120" rx="10" fill="white" fillOpacity="0.9" />
+
+          {/* Chart Lines */}
+          <line x1="20" y1="100" x2="160" y2="100" stroke="#730000" strokeWidth="2" />
+          <line x1="20" y1="20" x2="20" y2="100" stroke="#730000" strokeWidth="2" />
+
+          {/* Chart Bars */}
+          <rect x="40" y="60" width="15" height="40" fill="#ff6b6b" />
+          <rect x="70" y="40" width="15" height="60" fill="#ff6b6b" />
+          <rect x="100" y="70" width="15" height="30" fill="#ff6b6b" />
+          <rect x="130" y="30" width="15" height="70" fill="#ff6b6b" />
+
+          {/* Profit Line */}
+          <path
+            d="M20 70 L40 50 L70 60 L100 40 L130 30 L160 45"
+            stroke="#EC0000"
+            strokeWidth="3"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+
+        {/* Inventory Shelves */}
+        <g transform="translate(100, 320)">
+          <rect x="0" y="0" width="180" height="120" rx="10" fill="white" fillOpacity="0.9" />
+
+          {/* Shelf Lines */}
+          <line x1="10" y1="40" x2="170" y2="40" stroke="#730000" strokeWidth="2" />
+          <line x1="10" y1="80" x2="170" y2="80" stroke="#730000" strokeWidth="2" />
+
+          {/* Products on Shelves */}
+          <rect x="20" y="10" width="20" height="25" rx="2" fill="#ffa8a8" />
+          <rect x="50" y="15" width="20" height="20" rx="2" fill="#ff6b6b" />
+          <rect x="80" y="10" width="20" height="25" rx="2" fill="#ffc9c9" />
+          <rect x="110" y="15" width="20" height="20" rx="2" fill="#ff6b6b" />
+          <rect x="140" y="10" width="20" height="25" rx="2" fill="#ffa8a8" />
+
+          <rect x="20" y="50" width="20" height="25" rx="2" fill="#ff6b6b" />
+          <rect x="50" y="55" width="20" height="20" rx="2" fill="#ffc9c9" />
+          <rect x="80" y="50" width="20" height="25" rx="2" fill="#ff6b6b" />
+          <rect x="110" y="55" width="20" height="20" rx="2" fill="#ffa8a8" />
+          <rect x="140" y="50" width="20" height="25" rx="2" fill="#ff6b6b" />
+
+          <rect x="20" y="90" width="20" height="25" rx="2" fill="#ffc9c9" />
+          <rect x="50" y="95" width="20" height="20" rx="2" fill="#ff6b6b" />
+          <rect x="80" y="90" width="20" height="25" rx="2" fill="#ffa8a8" />
+          <rect x="110" y="95" width="20" height="20" rx="2" fill="#ff6b6b" />
+          <rect x="140" y="90" width="20" height="25" rx="2" fill="#ffc9c9" />
+        </g>
+      </svg>

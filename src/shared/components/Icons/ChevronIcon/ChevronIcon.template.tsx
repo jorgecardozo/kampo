@@ -1,0 +1,48 @@
+import { ChevronIconProps } from './ChevronIcon.types'
+
+export const ChevronIconTemplate = ({
+  className,
+  width = 24,
+  height = 24,
+  fill = '#FFFFFF',
+  hoverFill,
+  title,
+}: ChevronIconProps) => {
+  return (
+    <div className={`${className}`}>
+      <svg
+        width={width}
+        height={height}
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`fill-current transition-colors duration-200 fill-[${fill}] hover:fill-[${
+          hoverFill ? hoverFill : fill
+        }]`}
+      >
+        <title>{title}</title>
+        <g id="B. Digital,  Tech &#38; Docs/e. Arrows/BE090-chevron down | SYMBOLS, arrow, chevron">
+          <path
+            id="Vector"
+            d="M19.0041 9.00434C19.0056 9.26976 18.9013 9.52487 18.7141 9.71331L12.7141 15.7046C12.5263 15.8937 12.2707 16 12.0041 16C11.7375 16 11.4819 15.8937 11.2941 15.7046L5.29409 9.71331C4.90197 9.32176 4.90197 8.68692 5.29409 8.29537C5.68621 7.90382 6.32197 7.90382 6.71409 8.29537L12.0041 13.5877L17.2941 8.29537C17.4819 8.10633 17.7375 8 18.0041 8C18.2707 8 18.5263 8.10633 18.7141 8.29537C18.9013 8.48382 19.0056 8.73892 19.0041 9.00434Z"
+            fill={fill}
+          />
+          <mask
+            id="mask0_1_6702"
+            maskUnits="userSpaceOnUse"
+            x="5"
+            y="8"
+            width="15"
+            height="8"
+          >
+            <path
+              id="icon color"
+              d="M19.0041 9.00434C19.0056 9.26976 18.9013 9.52487 18.7141 9.71331L12.7141 15.7046C12.5263 15.8937 12.2707 16 12.0041 16C11.7375 16 11.4819 15.8937 11.2941 15.7046L5.29409 9.71331C4.90197 9.32176 4.90197 8.68692 5.29409 8.29537C5.68621 7.90382 6.32197 7.90382 6.71409 8.29537L12.0041 13.5877L17.2941 8.29537C17.4819 8.10633 17.7375 8 18.0041 8C18.2707 8 18.5263 8.10633 18.7141 8.29537C18.9013 8.48382 19.0056 8.73892 19.0041 9.00434Z"
+              fill={fill}
+            />
+          </mask>
+          <g mask="url(#mask0_1_6702)"></g>
+        </g>
+      </svg>
+    </div>
+  )
+}
