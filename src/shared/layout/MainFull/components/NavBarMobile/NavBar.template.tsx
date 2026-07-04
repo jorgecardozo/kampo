@@ -53,11 +53,14 @@ import { useEffectOnce } from 'hooks/useEffectOnce'
 import { Separator } from 'components/ui/separator'
 import { TextBodySm } from 'components/Text'
 import { usePermisos } from '@shared/context/PermisosProvider'
+import { useUser } from '@auth0/nextjs-auth0/client'
 
 const ThemeContext = createContext()
 
 const NavBarTemplate = ({ isOpen, setIsOpen }) => {
   const { isSuperAdmin } = usePermisos()
+  const { user } = useUser()
+  const [avatarError, setAvatarError] = useState(false)
   const [activeSubMenu, setActiveSubMenu] = useState(null)
   const [activeSubMenuBis, setActiveSubMenuBis] = useState(null)
   const [activeMenu, setActiveMenu] = useState(null)
@@ -355,20 +358,21 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
 
-          {/* Icono de usuario */}
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-main-600">
-            <img
-              src={
-                usuario.imagen_perfil ||
-                'https://delivery-flutter.s3.us-east-1.amazonaws.com/users/no-image.png'
-              }
-              alt="Profile"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src =
-                  'https://delivery-flutter.s3.us-east-1.amazonaws.com/users/no-image.png'
-              }}
-            />
+          {/* Avatar del usuario (Auth0). Si la foto falla/no existe → iniciales. */}
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-main-600 flex items-center justify-center bg-main-600">
+            {user?.picture && !avatarError ? (
+              <img
+                src={user.picture}
+                alt=""
+                referrerPolicy="no-referrer"
+                onError={() => setAvatarError(true)}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-base font-bold text-white">
+                {(user?.name || user?.email || '?').toString().charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
         </div>
       </div>
