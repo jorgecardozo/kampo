@@ -37,6 +37,26 @@ const envTone = (env: string) =>
     ? 'bg-amber-500'
     : 'bg-sky-500'
 
+// Tipo del cambio, según el prefijo del mensaje (feat/fix/refactor…).
+const TIPOS: Record<string, { label: string; color: string }> = {
+  feat: { label: 'Feature', color: 'bg-emerald-600' },
+  fix: { label: 'Fix', color: 'bg-rose-600' },
+  refactor: { label: 'Refactor', color: 'bg-sky-600' },
+  perf: { label: 'Performance', color: 'bg-sky-600' },
+  revert: { label: 'Revert', color: 'bg-amber-600' },
+  docs: { label: 'Docs', color: 'bg-gray-500' },
+  style: { label: 'Estilo', color: 'bg-gray-500' },
+  chore: { label: 'Mantenimiento', color: 'bg-gray-500' },
+  build: { label: 'Build', color: 'bg-gray-500' },
+  ci: { label: 'CI', color: 'bg-gray-500' },
+  test: { label: 'Tests', color: 'bg-gray-500' },
+}
+const parseTipo = (msg: string) => {
+  const m = /^(\w+)(\(.+\))?!?:/.exec((msg || '').trim())
+  const key = m ? m[1].toLowerCase() : ''
+  return TIPOS[key] || { label: 'Cambio', color: 'bg-gray-500' }
+}
+
 const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div className="flex items-start justify-between gap-4 py-1.5 border-b border-gray-100 dark:border-gray-700/60 last:border-0">
     <span className="text-xs font-medium uppercase tracking-wide text-gray-400">{label}</span>
@@ -44,7 +64,8 @@ const Row = ({ label, children }: { label: string; children: React.ReactNode }) 
   </div>
 )
 
-// Tag flotante con la versión desplegada. Al hacer clic muestra el detalle del deploy.
+// Badge flotante (abajo a la derecha) con la versión desplegada. Al hacer clic
+// muestra el detalle del deploy. Sin backdrop-blur (rompe el render en iOS Safari).
 export const VersionTag = () => {
   const [info, setInfo] = useState<VersionInfo | null>(null)
   const [open, setOpen] = useState(false)
@@ -59,6 +80,7 @@ export const VersionTag = () => {
   if (!info) return null
 
   const commitUrl = info.repo && info.commit ? `https://github.com/${info.repo}/commit/${info.commit}` : null
+  const tipo = parseTipo(info.message)
 
   return (
     <>
@@ -66,7 +88,7 @@ export const VersionTag = () => {
         type="button"
         onClick={() => setOpen(true)}
         title="Ver info del deploy"
-        className="fixed bottom-3 left-3 z-[70] inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white/85 dark:bg-gray-800/85 backdrop-blur px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 shadow-sm hover:bg-white dark:hover:bg-gray-800"
+        className="fixed bottom-3 right-3 z-40 inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 shadow-md hover:bg-gray-50 dark:hover:bg-gray-700"
       >
         <span className={`h-2 w-2 rounded-full ${envTone(info.env)}`} />
         <Tag size={12} /> {info.version}
@@ -104,6 +126,9 @@ export const VersionTag = () => {
               <div className="mb-3 flex items-center gap-2 rounded-xl bg-main-50 dark:bg-gray-700/40 px-3 py-2">
                 <Tag size={16} className="text-main-600" />
                 <span className="text-xl font-bold text-main-700 dark:text-main-400">{info.version}</span>
+                <span className={`ml-auto inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-white ${tipo.color}`}>
+                  {tipo.label}
+                </span>
               </div>
 
               <div className="space-y-0.5">
@@ -116,7 +141,7 @@ export const VersionTag = () => {
                     <span className="font-mono">{info.commitShort || '-'}</span>
                   )}
                 </Row>
-                <Row label="Mensaje">{info.message || '-'}</Row>
+                <Row label="Mensaje">{(info.message || '-').split('\n')[0]}</Row>
                 <Row label="Rama">
                   <span className="inline-flex items-center gap-1">
                     <GitBranch size={12} /> {info.branch || '-'}
