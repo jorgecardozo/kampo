@@ -150,3 +150,17 @@ html,
     @apply bg-background text-foreground;
   }
 }
+
+/* iOS: evitar el auto-zoom al enfocar inputs.
+   Safari en iPhone hace zoom cuando el input tiene font-size < 16px.
+   En mobile forzamos 16px en todos los campos (inputs, selects, textareas
+   y el input interno de react-select). En desktop no aplica. */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea,
+  .react-select__input,
+  [class*='-Input'] input {
+    font-size: 16px !important;
+  }
+}
