@@ -4,6 +4,7 @@ import PageHeader from '@modules/shared/ui/PageHeader'
 import { ModuleScreen, Panel, PrimaryButton, ScrollArea } from '@modules/shared/ui/primitives'
 import { inputClass } from '@modules/shared/ui/FormModal'
 import { formatCurrency } from '@modules/shared/lib/format'
+import { CATEGORIAS } from '../../shared/constants'
 import { PrecioKg } from '../precios.api'
 import { usePrecios, useSavePrecios } from '../usePrecios'
 
@@ -12,8 +13,10 @@ export const PreciosView = () => {
   const { mutateAsync, isPending } = useSavePrecios()
   const [precios, setPrecios] = useState<PrecioKg[]>([])
 
+  // Siempre mostramos las 5 categorías: con el precio guardado, o 0 si no existe.
   useEffect(() => {
-    if (data) setPrecios(data)
+    const guardados = new Map((data ?? []).map((p) => [p.categoria, p.precioKg]))
+    setPrecios(CATEGORIAS.map((c) => ({ categoria: c, precioKg: guardados.get(c) ?? 0 })))
   }, [data])
 
   const setPrecio = (categoria: string, precioKg: number) =>
