@@ -30,31 +30,39 @@ const fmt = (iso: string) => {
   }
 }
 
-const envTone = (env: string) =>
-  env === 'production'
-    ? 'bg-emerald-500'
-    : env === 'preview'
-    ? 'bg-amber-500'
-    : 'bg-sky-500'
+// Estilos de badge legibles (fondo suave + texto de color), como los de la app.
+const TONE = {
+  emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+  rose: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
+  sky: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300',
+  amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+  gray: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+}
+
+// Punto de color por entorno (para el badge flotante).
+const envDot = (env: string) =>
+  env === 'production' ? 'bg-emerald-500' : env === 'preview' ? 'bg-amber-500' : 'bg-sky-500'
+// Pill legible por entorno (para el modal).
+const envCls = (env: string) => (env === 'production' ? TONE.emerald : env === 'preview' ? TONE.amber : TONE.sky)
 
 // Tipo del cambio, según el prefijo del mensaje (feat/fix/refactor…).
-const TIPOS: Record<string, { label: string; color: string }> = {
-  feat: { label: 'Feature', color: 'bg-emerald-600' },
-  fix: { label: 'Fix', color: 'bg-rose-600' },
-  refactor: { label: 'Refactor', color: 'bg-sky-600' },
-  perf: { label: 'Performance', color: 'bg-sky-600' },
-  revert: { label: 'Revert', color: 'bg-amber-600' },
-  docs: { label: 'Docs', color: 'bg-gray-500' },
-  style: { label: 'Estilo', color: 'bg-gray-500' },
-  chore: { label: 'Mantenimiento', color: 'bg-gray-500' },
-  build: { label: 'Build', color: 'bg-gray-500' },
-  ci: { label: 'CI', color: 'bg-gray-500' },
-  test: { label: 'Tests', color: 'bg-gray-500' },
+const TIPOS: Record<string, { label: string; cls: string }> = {
+  feat: { label: 'Feature', cls: TONE.emerald },
+  fix: { label: 'Fix', cls: TONE.rose },
+  refactor: { label: 'Refactor', cls: TONE.sky },
+  perf: { label: 'Performance', cls: TONE.sky },
+  revert: { label: 'Revert', cls: TONE.amber },
+  docs: { label: 'Docs', cls: TONE.gray },
+  style: { label: 'Estilo', cls: TONE.gray },
+  chore: { label: 'Mantenimiento', cls: TONE.gray },
+  build: { label: 'Build', cls: TONE.gray },
+  ci: { label: 'CI', cls: TONE.gray },
+  test: { label: 'Tests', cls: TONE.gray },
 }
 const parseTipo = (msg: string) => {
   const m = /^(\w+)(\(.+\))?!?:/.exec((msg || '').trim())
   const key = m ? m[1].toLowerCase() : ''
-  return TIPOS[key] || { label: 'Cambio', color: 'bg-gray-500' }
+  return TIPOS[key] || { label: 'Cambio', cls: TONE.gray }
 }
 
 const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
@@ -90,7 +98,7 @@ export const VersionTag = () => {
         title="Ver info del deploy"
         className="fixed bottom-3 right-3 z-40 inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 shadow-md hover:bg-gray-50 dark:hover:bg-gray-700"
       >
-        <span className={`h-2 w-2 rounded-full ${envTone(info.env)}`} />
+        <span className={`h-2 w-2 rounded-full ${envDot(info.env)}`} />
         <Tag size={12} /> {info.version}
       </button>
 
@@ -109,7 +117,7 @@ export const VersionTag = () => {
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-2xl"
+              className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-6 shadow-2xl"
             >
               <div className="mb-5 flex items-center justify-between gap-3">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Versión desplegada</h3>
@@ -127,10 +135,10 @@ export const VersionTag = () => {
                   <span className="text-2xl font-bold text-main-700 dark:text-main-400">{info.version}</span>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-white ${tipo.color}`}>
+                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${tipo.cls}`}>
                     {tipo.label}
                   </span>
-                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-white ${envTone(info.env)}`}>
+                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${envCls(info.env)}`}>
                     {info.env}
                   </span>
                 </div>
