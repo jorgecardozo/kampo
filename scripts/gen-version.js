@@ -16,9 +16,14 @@ const git = (cmd) => {
 
 const sha = process.env.VERCEL_GIT_COMMIT_SHA || git('rev-parse HEAD')
 
+let pkgVersion = '0.0.0'
+try {
+  pkgVersion = require(join(process.cwd(), 'package.json')).version || pkgVersion
+} catch {}
+
 const info = {
-  // "version": último tag de git (ej: v1.2.0) o el commit corto si no hay tag.
-  version: git('describe --tags --always') || (sha ? sha.slice(0, 7) : 'dev'),
+  // "version": tag exacto de git (ej: v1.2.0) o la versión de package.json.
+  version: git('describe --tags --exact-match') || `v${pkgVersion}`,
   commit: sha || '',
   commitShort: sha ? sha.slice(0, 7) : '',
   message: process.env.VERCEL_GIT_COMMIT_MESSAGE || git('log -1 --pretty=%s'),

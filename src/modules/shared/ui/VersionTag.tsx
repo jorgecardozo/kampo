@@ -58,9 +58,9 @@ const parseTipo = (msg: string) => {
 }
 
 const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="flex items-start justify-between gap-4 py-1.5 border-b border-gray-100 dark:border-gray-700/60 last:border-0">
-    <span className="text-xs font-medium uppercase tracking-wide text-gray-400">{label}</span>
-    <span className="text-sm text-right text-gray-700 dark:text-gray-200 break-all">{children}</span>
+  <div className="flex items-center justify-between gap-4 py-3 border-b border-gray-100 dark:border-gray-700/60 last:border-0">
+    <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{label}</span>
+    <span className="text-sm text-right font-medium text-gray-700 dark:text-gray-200 break-words">{children}</span>
   </div>
 )
 
@@ -109,29 +109,34 @@ export const VersionTag = () => {
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-2xl"
+              className="w-full max-w-md rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-2xl"
             >
-              <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Versión desplegada</h3>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold text-white ${envTone(info.env)}`}>
-                    {info.env}
-                  </span>
-                </div>
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Versión desplegada</h3>
                 <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700">
                   <X size={18} />
                 </button>
               </div>
 
-              <div className="mb-3 flex items-center gap-2 rounded-xl bg-main-50 dark:bg-gray-700/40 px-3 py-2">
-                <Tag size={16} className="text-main-600" />
-                <span className="text-xl font-bold text-main-700 dark:text-main-400">{info.version}</span>
-                <span className={`ml-auto inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-white ${tipo.color}`}>
-                  {tipo.label}
-                </span>
+              {/* Hero: versión + tipo + entorno */}
+              <div className="mb-5 rounded-2xl bg-main-50 dark:bg-gray-700/40 px-4 py-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-main-600 text-white">
+                    <Tag size={16} />
+                  </span>
+                  <span className="text-2xl font-bold text-main-700 dark:text-main-400">{info.version}</span>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-white ${tipo.color}`}>
+                    {tipo.label}
+                  </span>
+                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-white ${envTone(info.env)}`}>
+                    {info.env}
+                  </span>
+                </div>
               </div>
 
-              <div className="space-y-0.5">
+              <div className="space-y-0">
                 <Row label="Commit">
                   {commitUrl ? (
                     <a href={commitUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-main-600 hover:underline">
