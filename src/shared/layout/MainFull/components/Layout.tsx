@@ -3,7 +3,6 @@ import ContentWrapper from './ContentWrapper'
 import { NavBarTop } from './NavBarTop'
 import Sidebar from './SidebarNew'
 import NavBarMobile from './NavBarMobile'
-import VersionTag from '@modules/shared/ui/VersionTag'
 // import { NavBarTop } from 'components/NavBarTop'
 
 const Layout = ({ component: Component, children, withPadding = false }) => {
@@ -29,7 +28,6 @@ const Layout = ({ component: Component, children, withPadding = false }) => {
           {children ?? (Component ? <Component /> : null)}
         </div>
       </div>
-      <VersionTag />
     </>
   )
 }

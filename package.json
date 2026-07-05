@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Gestión de campo: gastos y ganadería",
   "scripts": {
-    "dev": "node scripts/gen-version.js && next dev",
+    "dev": "next dev",
     "lint": "next lint",
-    "build": "node scripts/gen-version.js && next build",
+    "build": "next build",
     "start": "node_modules/next/dist/bin/next start -p $PORT",
     "test": "jest --ci"
   },
