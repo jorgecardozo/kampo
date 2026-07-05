@@ -609,9 +609,13 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
                 className="flex items-center gap-2"
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-main-600 text-xl font-bold text-white shadow-md">
-                  C
+                  K
                 </span>
-                <h1 className="text-2xl font-bold tracking-tight text-gray-800 dark:text-white">CAMPO</h1>
+                <h1 className="text-2xl font-bold tracking-tight">
+                  <span className="text-gray-800 dark:text-white">KA</span>
+                  <span className="text-main-600">MP</span>
+                  <span className="text-gray-800 dark:text-white">O</span>
+                </h1>
               </motion.div>
             ) : (
               <motion.div
@@ -621,7 +625,7 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
                 transition={{ duration: 0.3 }}
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-main-600 text-xl font-bold text-white shadow-md">
-                  C
+                  K
                 </span>
               </motion.div>
             )}

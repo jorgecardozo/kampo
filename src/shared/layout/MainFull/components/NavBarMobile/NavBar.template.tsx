@@ -410,9 +410,9 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
                 transition={{ duration: 0.3 }}
               >
                 <h1 className="text-4xl font-bold tracking-tight">
-                  <span className="text-black dark:text-white">ST</span>
-                  <span className="text-main-600">OO</span>
-                  <span className="text-black dark:text-white">KI</span>
+                  <span className="text-black dark:text-white">KA</span>
+                  <span className="text-main-600">MP</span>
+                  <span className="text-black dark:text-white">O</span>
                 </h1>
               </motion.div>
 

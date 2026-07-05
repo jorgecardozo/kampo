@@ -13,10 +13,10 @@ const SignIn = () => (
       <div className="w-full max-w-md rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 shadow-lg">
         <div className="mb-6 flex flex-col items-center text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-main-600 text-2xl font-bold text-white shadow-md">
-            C
+            K
           </span>
           <h1 className="mt-3 text-2xl font-bold tracking-tight text-gray-800 dark:text-white">
-            CAMPO <span className="text-main-600">Management</span>
+            KAMPO <span className="text-main-600">Management</span>
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Gestión de ganadería y gastos del campo
