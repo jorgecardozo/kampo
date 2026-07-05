@@ -39,3 +39,6 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+
+# Generado en cada build (gen-version.js)
+public/version.json
