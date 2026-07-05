@@ -17,7 +17,7 @@ import { CATEGORIAS, ESTADOS } from '../../shared/constants'
 import type { Animal, EstadoAnimal } from '../../shared/types'
 import { useDuenos } from '../../duenos/useDuenos'
 import { usePrecios } from '../../precios/usePrecios'
-import { fetchAnimalesArchivedPage, fetchAnimalesPage } from '../animales.api'
+import { SIN_DUENO, fetchAnimalesArchivedPage, fetchAnimalesPage } from '../animales.api'
 import { usePurgeAnimal, useRestoreAnimal } from '../useAnimales'
 import AnimalFormDrawer from './AnimalFormDrawer'
 
@@ -126,7 +126,7 @@ export const AnimalesView = () => {
     const c: { key: string; label: string; onClear: () => void }[] = []
     if (categoria) c.push({ key: 'cat', label: categoria, onClear: () => setCategoria('') })
     if (estado) c.push({ key: 'est', label: estado, onClear: () => setEstado('') })
-    if (dueno) c.push({ key: 'due', label: `Dueño: ${dueno}`, onClear: () => setDueno('') })
+    if (dueno) c.push({ key: 'due', label: dueno === SIN_DUENO ? 'Sin dueño' : `Dueño: ${dueno}`, onClear: () => setDueno('') })
     if (dateFrom || dateTo) c.push({ key: 'fec', label: `Ingreso: ${dateFrom || '…'} → ${dateTo || '…'}`, onClear: () => { setDateFrom(''); setDateTo('') } })
     return c
   }, [categoria, estado, dueno, dateFrom, dateTo])
@@ -221,7 +221,11 @@ export const AnimalesView = () => {
                 value={dueno}
                 onChange={setDueno}
                 placeholder="Todos"
-                options={[{ value: '', label: 'Todos los dueños' }, ...(duenos ?? []).map((d) => ({ value: d.nombre, label: d.nombre }))]}
+                options={[
+                  { value: '', label: 'Todos los dueños' },
+                  { value: SIN_DUENO, label: '⚠️ Sin dueño' },
+                  ...(duenos ?? []).map((d) => ({ value: d.nombre, label: d.nombre })),
+                ]}
               />
             </FilterField>
             <FilterField label="Ingreso">

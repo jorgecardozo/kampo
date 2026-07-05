@@ -3,6 +3,9 @@ import { getCampoActual } from 'lib/campoActual'
 import { type Page } from '@modules/shared/lib/pagination'
 import type { Animal } from '../shared/types'
 
+// Valor especial para filtrar los animales SIN dueño asignado.
+export const SIN_DUENO = '__sin_dueno__'
+
 export type AnimalesFilters = {
   search?: string
   categoria?: string
@@ -60,7 +63,8 @@ const applyFilters = (q: any, f: AnimalesFilters) => {
   }
   if (f.categoria) q = q.eq('categoria', f.categoria)
   if (f.estado) q = q.eq('estado', f.estado)
-  if (f.dueno) q = q.eq('dueno', f.dueno)
+  if (f.dueno === SIN_DUENO) q = q.or('dueno.is.null,dueno.eq.')
+  else if (f.dueno) q = q.eq('dueno', f.dueno)
   if (f.dateFrom) q = q.gte('fecha_ingreso', f.dateFrom)
   if (f.dateTo) q = q.lte('fecha_ingreso', f.dateTo)
   return q
