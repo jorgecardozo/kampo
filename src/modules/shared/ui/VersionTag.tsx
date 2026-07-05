@@ -96,7 +96,7 @@ export const VersionTag = () => {
         type="button"
         onClick={() => setOpen(true)}
         title="Ver info del deploy"
-        className="fixed bottom-3 right-3 z-40 inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 shadow-md hover:bg-gray-50 dark:hover:bg-gray-700"
+        className="fixed bottom-3 right-3 z-40 inline-flex items-center gap-1.5 rounded-full border border-gray-700 bg-gray-900 px-3 py-1.5 text-xs font-semibold text-white shadow-lg hover:bg-gray-800"
       >
         <span className={`h-2 w-2 rounded-full ${envDot(info.env)}`} />
         <Tag size={12} /> {info.version}
