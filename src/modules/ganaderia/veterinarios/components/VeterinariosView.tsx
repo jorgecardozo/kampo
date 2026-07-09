@@ -26,7 +26,7 @@ const PAGE_SIZE = 15
 const empty: Omit<Veterinario, 'id'> = { nombre: '', matricula: '', telefono: '', email: '' }
 
 const baseColumns: Column<Veterinario>[] = [
-  { key: 'nombre', label: 'Nombre', hideable: false, className: 'font-semibold', render: (v) => v.nombre },
+  { key: 'nombre', label: 'Nombre', truncate: true, hideable: false, className: 'font-semibold', render: (v) => v.nombre },
   { key: 'matricula', label: 'Matrícula', render: (v) => v.matricula },
   { key: 'telefono', label: 'Teléfono', render: (v) => v.telefono || '-' },
   { key: 'email', label: 'Email', render: (v) => v.email || '-' },
@@ -163,11 +163,11 @@ export const VeterinariosView = () => {
         }
       />
       <ScrollArea onScrollEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}>
-        <Panel className="p-4 flex flex-1 flex-col min-h-0">
-          <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4">
+        <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
+          <div className="flex items-center gap-2 mb-3">
             <SearchInput value={search} onChange={setSearch} placeholder="Buscar nombre o matrícula…" />
-            <div className="md:ml-auto flex items-center gap-3">
-              <span className="text-sm text-gray-400">
+            <div className="ml-auto flex items-center gap-2">
+              <span className="hidden sm:inline text-sm text-gray-400">
                 {lq.total} {isTrash ? 'archivados' : 'veterinarios'}
               </span>
               <ModeToggle mode={mode} onChange={setMode} />
@@ -187,6 +187,7 @@ export const VeterinariosView = () => {
             onRowClick={isTrash ? undefined : openEdit}
             selectedKey={!isTrash && open ? editingId : null}
             loadingMore={mode === 'infinite' && lq.isFetchingNext}
+            onReachEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}
           />
           {mode === 'paged' ? (
             <Pagination page={page} pageSize={PAGE_SIZE} total={lq.total} onPage={setPage} />

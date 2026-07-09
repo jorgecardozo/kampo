@@ -200,7 +200,7 @@ export const VacunacionesView = () => {
           mode === 'infinite' && list.hasNext && !list.isFetchingNext ? list.fetchNext : undefined
         }
       >
-        <Panel className="p-4 flex flex-1 flex-col min-h-0">
+        <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
           <FiltersBar
             search={search}
             onSearch={setSearch}
@@ -254,6 +254,7 @@ export const VacunacionesView = () => {
             onRowClick={isTrash ? undefined : openEdit}
             selectedKey={!isTrash && open ? selected?.id : null}
             loadingMore={mode === 'infinite' && list.isFetchingNext}
+            onReachEnd={mode === 'infinite' && list.hasNext && !list.isFetchingNext ? list.fetchNext : undefined}
           />
 
           {mode === 'paged' ? (

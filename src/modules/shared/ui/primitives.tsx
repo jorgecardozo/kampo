@@ -72,7 +72,7 @@ export const SearchInput = ({
   onChange: (v: string) => void
   placeholder?: string
 }) => (
-  <div className="relative w-full md:w-72">
+  <div className="relative w-full min-w-0 md:w-72">
     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
     <input
       value={value}

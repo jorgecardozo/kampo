@@ -83,7 +83,7 @@ export const UsuariosView = () => {
             />
           </Panel>
         ) : (
-          <Panel className="p-4 flex flex-1 flex-col min-h-0">
+          <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
             <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
               Invitá gente con su <b>email de Google/Facebook</b>. Cuando entren con ese email, verán este campo con
               el rol que les asignes.

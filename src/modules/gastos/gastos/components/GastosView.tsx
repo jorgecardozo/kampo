@@ -25,8 +25,8 @@ const PAGE_SIZE = 15
 const baseColumns: Column<Gasto>[] = [
   { key: 'fecha', label: 'Fecha', render: (g) => formatDate(g.fecha) },
   { key: 'categoria', label: 'Categoría', render: (g) => <Badge tone="blue">{g.categoriaNombre}</Badge> },
-  { key: 'descripcion', label: 'Descripción', hideable: false, className: 'font-medium', render: (g) => g.descripcion },
-  { key: 'proveedor', label: 'Proveedor', render: (g) => g.proveedor },
+  { key: 'descripcion', label: 'Descripción', truncate: true, hideable: false, className: 'font-medium', render: (g) => g.descripcion },
+  { key: 'proveedor', label: 'Proveedor', truncate: true, render: (g) => g.proveedor },
   { key: 'campo', label: 'Campo', render: (g) => g.campo },
   { key: 'medio', label: 'Medio', render: (g) => g.medioPago },
   { key: 'monto', label: 'Monto', className: 'font-semibold', render: (g) => formatCurrency(g.monto) },
@@ -145,7 +145,7 @@ export const GastosView = () => {
           mode === 'infinite' && list.hasNext && !list.isFetchingNext ? list.fetchNext : undefined
         }
       >
-        <Panel className="p-4 flex flex-1 flex-col min-h-0">
+        <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
           <FiltersBar
             search={search}
             onSearch={setSearch}
@@ -198,6 +198,7 @@ export const GastosView = () => {
             onRowClick={isTrash ? undefined : openEdit}
             selectedKey={!isTrash && open ? selected?.id : null}
             loadingMore={mode === 'infinite' && list.isFetchingNext}
+            onReachEnd={mode === 'infinite' && list.hasNext && !list.isFetchingNext ? list.fetchNext : undefined}
           />
 
           {mode === 'paged' ? (

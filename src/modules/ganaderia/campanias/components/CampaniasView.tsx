@@ -141,11 +141,11 @@ export const CampaniasView = () => {
         }
       />
       <ScrollArea onScrollEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}>
-        <Panel className="p-4 flex flex-1 flex-col min-h-0">
-          <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4">
+        <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
+          <div className="flex items-center gap-2 mb-3">
             <SearchInput value={search} onChange={setSearch} placeholder="Buscar vacuna o veterinario…" />
-            <div className="md:ml-auto flex items-center gap-3">
-              <span className="text-sm text-gray-400">
+            <div className="ml-auto flex items-center gap-2">
+              <span className="hidden sm:inline text-sm text-gray-400">
                 {lq.total} {isTrash ? 'archivadas' : 'campañas'}
               </span>
               <ModeToggle mode={mode} onChange={setMode} />
@@ -161,6 +161,7 @@ export const CampaniasView = () => {
             onRowClick={isTrash ? undefined : setEditing}
             selectedKey={!isTrash ? editing?.id ?? null : null}
             loadingMore={mode === 'infinite' && lq.isFetchingNext}
+            onReachEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}
             emptyLabel={emptyState.label}
             emptyIcon="🗓️"
             emptyDescription={emptyState.description}

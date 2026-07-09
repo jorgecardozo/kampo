@@ -177,9 +177,9 @@ export const PotrerosView = () => {
         }
       />
       <ScrollArea onScrollEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}>
-        <Panel className="p-4 flex flex-1 flex-col min-h-0">
-          <div className="flex items-center justify-end gap-3 mb-4">
-            <span className="text-sm text-gray-400 mr-auto">
+        <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
+          <div className="flex items-center justify-end gap-2 mb-3">
+            <span className="hidden sm:inline text-sm text-gray-400 mr-auto">
               {lq.total} {isTrash ? 'archivados' : 'potreros'}
             </span>
             <ModeToggle mode={mode} onChange={setMode} />
@@ -198,6 +198,7 @@ export const PotrerosView = () => {
             onRowClick={isTrash ? undefined : openEdit}
             selectedKey={!isTrash && open ? editingId : null}
             loadingMore={mode === 'infinite' && lq.isFetchingNext}
+            onReachEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}
           />
           {mode === 'paged' ? (
             <Pagination page={page} pageSize={PAGE_SIZE} total={lq.total} onPage={setPage} />

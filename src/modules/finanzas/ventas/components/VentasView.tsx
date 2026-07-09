@@ -23,9 +23,9 @@ const areaLabel = (a: AreaVenta) => (a === 'ganaderia' ? 'Ganadería' : 'Campo')
 const baseColumns: Column<Venta>[] = [
   { key: 'fecha', label: 'Fecha', render: (v) => formatDate(v.fecha) },
   { key: 'area', label: 'Área', render: (v) => <Badge tone={v.area === 'ganaderia' ? 'green' : 'blue'}>{areaLabel(v.area)}</Badge> },
-  { key: 'concepto', label: 'Concepto', hideable: false, className: 'font-medium', render: (v) => v.concepto },
+  { key: 'concepto', label: 'Concepto', truncate: true, hideable: false, className: 'font-medium', render: (v) => v.concepto },
   { key: 'animales', label: 'Animales', render: (v) => (v.animalesCount ? `${v.animalesCount} cab.` : '-') },
-  { key: 'detalle', label: 'Detalle', render: (v) => v.detalle || '-' },
+  { key: 'detalle', label: 'Detalle', truncate: true, render: (v) => v.detalle || '-' },
   { key: 'monto', label: 'Monto', className: 'font-semibold', render: (v) => formatCurrency(v.monto) },
 ]
 
@@ -132,7 +132,7 @@ export const VentasView = () => {
         }
       />
       <ScrollArea onScrollEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}>
-        <Panel className="p-4 flex flex-1 flex-col min-h-0">
+        <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
           <FiltersBar
             search={search}
             onSearch={setSearch}
@@ -179,6 +179,7 @@ export const VentasView = () => {
             onRowClick={isTrash ? undefined : openEdit}
             selectedKey={!isTrash && open ? selected?.id : null}
             loadingMore={mode === 'infinite' && lq.isFetchingNext}
+            onReachEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}
           />
           {mode === 'paged' ? (
             <Pagination page={page} pageSize={PAGE_SIZE} total={lq.total} onPage={setPage} />

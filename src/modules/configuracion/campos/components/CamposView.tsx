@@ -15,7 +15,7 @@ const PAGE_SIZE = 15
 const empty: Omit<Campo, 'id'> = { nombre: '', ubicacion: '', hectareas: 0 }
 
 const columns: Column<Campo>[] = [
-  { key: 'nombre', label: 'Campo', hideable: false, className: 'font-semibold', render: (c) => c.nombre },
+  { key: 'nombre', label: 'Campo', truncate: true, hideable: false, className: 'font-semibold', render: (c) => c.nombre },
   { key: 'ubicacion', label: 'Ubicación', render: (c) => c.ubicacion || '-' },
   { key: 'hectareas', label: 'Hectáreas', render: (c) => `${c.hectareas} ha` },
 ]
@@ -87,9 +87,9 @@ export const CamposView = () => {
         actions={<PrimaryButton onClick={openCreate}>Nuevo campo</PrimaryButton>}
       />
       <ScrollArea onScrollEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}>
-        <Panel className="p-4 flex flex-1 flex-col min-h-0">
-          <div className="flex items-center justify-end gap-3 mb-4">
-            <span className="text-sm text-gray-400 mr-auto">{lq.total} campos</span>
+        <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
+          <div className="flex items-center justify-end gap-2 mb-3">
+            <span className="hidden sm:inline text-sm text-gray-400 mr-auto">{lq.total} campos</span>
             <ModeToggle mode={mode} onChange={setMode} />
             <ColumnsToggle columns={columns} isVisible={isVisible} toggle={toggle} />
           </div>
@@ -106,6 +106,7 @@ export const CamposView = () => {
             onRowClick={openEdit}
             selectedKey={open ? editingId : null}
             loadingMore={mode === 'infinite' && lq.isFetchingNext}
+            onReachEnd={mode === 'infinite' && lq.hasNext && !lq.isFetchingNext ? lq.fetchNext : undefined}
           />
           {mode === 'paged' ? (
             <Pagination page={page} pageSize={PAGE_SIZE} total={lq.total} onPage={setPage} />

@@ -80,6 +80,10 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
   const { usuario } = useSelectors()
   const [isUploading, setIsUploading] = useState(false)
   const [menuOpen, setMenuOpen] = useState(true)
+  // Acordeón de secciones (cuando la sidebar está expandida).
+  const [openSections, setOpenSections] = useState({})
+  const toggleSection = (title, defaultOpen) =>
+    setOpenSections((p) => ({ ...p, [title]: !(title in p ? p[title] : defaultOpen) }))
   // Si la foto del proveedor (Auth0/Gravatar) falla o no existe, mostramos iniciales.
   const [avatarError, setAvatarError] = useState(false)
 
@@ -502,7 +506,10 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
     }
   ]
 
-
+  // Sección que contiene la ruta actual (abierta por defecto en el acordeón).
+  const activeSectionTitle = menuSections.find((s) =>
+    s.items.some((it) => it.path === router.pathname)
+  )?.title
 
   const obtenerUsuarioData = async (id: number) => {
     setIsUploading(true)
@@ -721,23 +728,40 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
           <div className={`pt-0 pb-4 px-5 mr-3 ${isMobile && !isOpen ? 'hidden' : ''}`}>
             {filterMenuSections(menuSections, searchQuery).map((section, sectionIndex) => (
               <div key={section.title}>
-                {/* Título de la sección - solo visible cuando la sidebar está abierta */}
+                {/* Cabecera de sección (acordeón) - solo con la sidebar abierta */}
+                {(() => {
+                  const sectionOpen = !isOpen
+                    ? true
+                    : searchQuery
+                      ? true
+                      : section.title in openSections
+                        ? openSections[section.title]
+                        : section.title === activeSectionTitle
+                  return (
+                <>
                 <AnimatePresence>
                   {isOpen && (
-                    <motion.div
+                    <motion.button
+                      type="button"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="px-4 py-0 mt-2 mb-2"
+                      onClick={() => toggleSection(section.title, section.title === activeSectionTitle)}
+                      className="flex w-full items-center justify-between px-4 py-1.5 mt-2 mb-1 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800"
                     >
                       <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                         {section.title}
                       </h3>
-                    </motion.div>
+                      <ChevronDown
+                        size={15}
+                        className={`text-gray-400 transition-transform duration-200 ${sectionOpen ? 'rotate-180' : ''}`}
+                      />
+                    </motion.button>
                   )}
                 </AnimatePresence>
 
-                {/* Items del menú */}
+                {/* Items del menú (colapsables cuando la sidebar está abierta) */}
+                {sectionOpen && (
                 <ul>
                   {section.items.map((item, index) => {
                     const itemId = `${section.title}-${item.title}-${index}`
@@ -883,6 +907,10 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
                     )
                   })}
                 </ul>
+                )}
+                </>
+                  )
+                })()}
 
                 {/* Separador entre secciones - visible siempre */}
                 {sectionIndex < menuSections.length - 1 && (
