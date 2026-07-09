@@ -89,34 +89,27 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
     if (isOpen) { setDragW(null); setIsResizing(false) }
   }, [isOpen])
 
-  const onSideDown = (e) => {
-    gesture.current = { x: e.clientX, y: e.clientY, w: sideRef.current?.offsetWidth || 0, mode: null }
+  // Tirador del borde derecho: arrastrar a la izquierda angosta; < 50% → cierra.
+  const onHandleDown = (e) => {
+    e.stopPropagation()
+    gesture.current = { x: e.clientX, w: sideRef.current?.offsetWidth || 0, mode: 'resize' }
+    setIsResizing(true)
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch {}
   }
-  const onSideMove = (e) => {
+  const onHandleMove = (e) => {
     const g = gesture.current
-    if (!g.w) return
-    const dx = e.clientX - g.x
-    const dy = e.clientY - g.y
-    if (g.mode === null) {
-      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) { g.mode = 'scroll'; return }
-      if (Math.abs(dx) > 8) {
-        g.mode = 'resize'
-        setIsResizing(true)
-        try { e.currentTarget.setPointerCapture(e.pointerId) } catch {}
-      } else return
-    }
-    if (g.mode !== 'resize') return
-    const newW = Math.max(0, Math.min(g.w, g.w + dx)) // dx negativo = más angosta
+    if (g.mode !== 'resize' || !g.w) return
+    const newW = Math.max(0, Math.min(g.w, g.w + (e.clientX - g.x))) // dx negativo = más angosta
     setDragW(newW)
   }
-  const onSideUp = () => {
+  const onHandleUp = () => {
     const g = gesture.current
-    if (g.mode === 'resize') {
+    if (g.mode === 'resize' && g.w) {
       if (dragW != null && dragW < g.w * 0.5) setIsOpen(false)
       else setDragW(null)
     }
     setIsResizing(false)
-    gesture.current = { x: 0, y: 0, w: 0, mode: null }
+    gesture.current = { x: 0, w: 0, mode: null }
   }
 
   const router = useRouter()
@@ -451,17 +444,21 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            // Resize por gesto: arrastrando a la izquierda se angosta; si baja del
-            // 50% del ancho, se cierra.
-            onPointerDown={onSideDown}
-            onPointerMove={onSideMove}
-            onPointerUp={onSideUp}
-            onPointerCancel={onSideUp}
             style={dragW != null ? { width: dragW } : undefined}
-            className={`fixed top-0 left-0 h-screen w-[85%] touch-pan-y overflow-hidden bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60] ${
+            className={`fixed top-0 left-0 flex h-screen w-[85%] flex-col overflow-hidden bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60] ${
               isResizing ? '' : 'transition-[width] duration-200'
             }`}
           >
+            {/* Tirador del borde derecho para angostar/cerrar arrastrando */}
+            <div
+              onPointerDown={onHandleDown}
+              onPointerMove={onHandleMove}
+              onPointerUp={onHandleUp}
+              onPointerCancel={onHandleUp}
+              className="absolute top-0 right-0 z-20 flex h-full w-6 cursor-ew-resize touch-none items-center justify-center"
+            >
+              <div className="h-16 w-1.5 rounded-full bg-gray-300 dark:bg-gray-600" />
+            </div>
             {/* Header: Logo y botón de cerrar - misma altura que barra superior */}
             <div className="relative flex items-center justify-center h-16 px-5">
               {/* Logo de la empresa - centrado */}
@@ -491,7 +488,7 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
             {/* Contenido con padding y scroll */}
             <div
               id="navbar-scroll-container"
-              className="px-5 pb-20 overflow-y-auto overflow-x-hidden scrollbar-thin-auto"
+              className="flex-1 min-h-0 px-5 pb-20 overflow-y-auto overflow-x-hidden scrollbar-thin-auto"
               style={{
                 height: 'calc(100dvh - 64px)'
               }}
