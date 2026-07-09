@@ -15,7 +15,10 @@ const Layout = ({ component: Component, children, withPadding = false }) => {
       {/* NavBar para móvil */}
       <NavBarMobile isOpen={isMobileNavOpen} setIsOpen={setIsMobileNavOpen} />
 
-      <div className='relative flex h-screen flex-col overflow-hidden bg-main-50 dark:bg-gray-900'>
+      {/* h-[100dvh]: altura dinámica del viewport (se adapta a la barra del
+          navegador y al alto de cada celular) → sin scroll de página, solo la
+          tabla scrollea por dentro. */}
+      <div className='relative flex h-[100dvh] flex-col overflow-hidden bg-main-50 dark:bg-gray-900'>
         {/* La sidebar se abre al pasar el mouse por encima y se cierra al salir.
             Sin overlay/blur: el contenido queda visible al costado. */}
         <div
