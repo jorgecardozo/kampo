@@ -408,7 +408,16 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 h-screen w-[85%] bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60]"
+            // Arrastrable: seguís el dedo hacia la izquierda; si soltás pasando
+            // el umbral (o con impulso) se esconde, sino vuelve a su lugar.
+            drag="x"
+            dragDirectionLock
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={{ left: 0.9, right: 0 }}
+            onDragEnd={(_e, info) => {
+              if (info.offset.x < -90 || info.velocity.x < -450) setIsOpen(false)
+            }}
+            className="fixed top-0 left-0 h-screen w-[85%] touch-pan-y bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60]"
           >
             {/* Header: Logo y botón de cerrar - misma altura que barra superior */}
             <div className="relative flex items-center justify-center h-16 px-5">
