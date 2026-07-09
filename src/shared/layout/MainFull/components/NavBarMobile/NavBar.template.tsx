@@ -72,6 +72,10 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
   const { usuario } = useSelectors()
   const [isUploading, setIsUploading] = useState(false)
   const [menuOpen, setMenuOpen] = useState(true)
+  // Acordeón: qué secciones están abiertas (por defecto solo la sección activa).
+  const [openSections, setOpenSections] = useState({})
+  const toggleSection = (title, defaultOpen) =>
+    setOpenSections((p) => ({ ...p, [title]: !(title in p ? p[title] : defaultOpen) }))
 
   const router = useRouter()
   const isMobile = useMediaQuery('(max-width: 768px)')
@@ -306,6 +310,11 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
     }
   ]
 
+  // Sección que contiene la ruta actual (se abre por defecto en el acordeón).
+  const activeSectionTitle = menuSections.find((s) =>
+    s.items.some((it) => it.path === router.pathname)
+  )?.title
+
   const obtenerUsuarioData = async (id: number) => {
     setIsUploading(true)
     const response = await obtenerUsuario(id)
@@ -468,15 +477,38 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 + sectionIndex * 0.05 }}
                 >
-                  {/* Título de la sección */}
-                  <div className="px-4 py-2 mt-4 mb-2">
-                    <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {section.title}
-                    </h3>
-                  </div>
+                  {/* Cabecera de la sección (acordeón): abre/cierra sus items */}
+                  {(() => {
+                    const sectionOpen = searchQuery
+                      ? true
+                      : section.title in openSections
+                        ? openSections[section.title]
+                        : section.title === activeSectionTitle
+                    return (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => toggleSection(section.title, section.title === activeSectionTitle)}
+                          className="flex w-full items-center justify-between px-4 py-2.5 mt-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                          <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            {section.title}
+                          </h3>
+                          <ChevronDown
+                            size={16}
+                            className={`text-gray-400 transition-transform duration-200 ${sectionOpen ? 'rotate-180' : ''}`}
+                          />
+                        </button>
 
-                  {/* Items del menú */}
-                  <ul>
+                        <AnimatePresence initial={false}>
+                          {sectionOpen && (
+                            <motion.ul
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
                     {section.items.map((item, index) => {
                       const itemId = `${section.title}-${item.title}-${index}`
                       const isActive = item.path ? router.pathname === item.path : false
@@ -570,12 +602,17 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
                       </motion.li>
                       )
                     })}
-                  </ul>
+                            </motion.ul>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    )
+                  })()}
 
                   {/* Separador entre secciones */}
                   {sectionIndex < menuSections.length - 1 && (
-                    <div className="my-4">
-                      <Separator className="bg-gray-300" />
+                    <div className="my-3">
+                      <Separator className="bg-gray-200 dark:bg-gray-700" />
                     </div>
                   )}
                 </motion.div>
