@@ -20,7 +20,10 @@ export const ScrollArea = ({
     if (el.scrollHeight - el.scrollTop - el.clientHeight < 250) onScrollEnd()
   }
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto pt-4" onScroll={handleScroll}>
+    <div
+      className="no-scrollbar flex flex-1 flex-col overflow-y-auto overscroll-contain pt-4"
+      onScroll={handleScroll}
+    >
       {children}
     </div>
   )

@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { ChevronDown, Columns3 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -112,6 +112,7 @@ export function DataTable<T>({
   emptyIcon,
   emptyDescription,
   emptyAction,
+  onReachEnd,
 }: {
   columns: Column<T>[]
   rows: T[]
@@ -125,9 +126,27 @@ export function DataTable<T>({
   emptyIcon?: ReactNode
   emptyDescription?: ReactNode
   emptyAction?: ReactNode
+  onReachEnd?: () => void // scroll infinito: se llama al acercarse al final
 }) {
   const cols = columns.filter((c) => isVisible(c.key))
   const showEmpty = !isLoading && rows.length === 0 && !loadingMore
+
+  // Scroll infinito robusto: un centinela invisible al final; cuando entra en
+  // viewport (con margen), pedimos la próxima página. Funciona sin importar qué
+  // elemento scrollee (desktop o mobile).
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el || !onReachEnd) return
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) onReachEnd()
+      },
+      { rootMargin: '300px 0px' }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [onReachEnd, rows.length])
 
   // Con filas: contenedor de altura automática → el scroll vertical lo maneja
   // el ScrollArea (así funciona el scroll infinito). Vacío: crece (flex-1) para
@@ -137,7 +156,7 @@ export function DataTable<T>({
     <div
       className={`${
         showEmpty ? 'flex flex-1 flex-col' : ''
-      } overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700`}
+      } no-scrollbar overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700`}
     >
       <table className="w-full text-sm">
         <thead className="bg-main-600 text-left text-xs uppercase tracking-wide text-white">
@@ -183,6 +202,9 @@ export function DataTable<T>({
           )}
         </tbody>
       </table>
+
+      {/* Centinela para el scroll infinito (invisible). */}
+      {onReachEnd && !showEmpty && <div ref={sentinelRef} aria-hidden className="h-px w-px" />}
 
       {/* Estado vacío centrado en el espacio restante del contenedor. */}
       {showEmpty && (

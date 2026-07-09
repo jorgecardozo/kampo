@@ -164,3 +164,18 @@ html,
     font-size: 16px !important;
   }
 }
+
+/* Ocultar barras de scroll (el scroll sigue funcionando por gesto/trackpad). */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Evitar el "pull-to-refresh" / reload al scrollear en mobile. */
+html,
+body {
+  overscroll-behavior-y: none;
+}

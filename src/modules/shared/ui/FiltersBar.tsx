@@ -51,34 +51,36 @@ type Props = {
 // Barra de filtros: búsqueda + botón "Filtros (N)" con panel + chips de activos.
 export const FiltersBar = ({ search, onSearch, searchPlaceholder, children, chips = [], onClearAll, right }: Props) => (
   <div className="mb-2 sm:mb-4 flex flex-col gap-2 sm:gap-3">
-    <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-3">
-      <SearchInput value={search} onChange={onSearch} placeholder={searchPlaceholder} />
-      <div className="md:ml-auto flex flex-wrap items-center gap-2 sm:gap-3">
-        {right}
-        <Popover>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              <SlidersHorizontal size={16} /> Filtros
-              {chips.length > 0 && (
-                <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-main-600 px-1.5 text-xs font-semibold text-white">
-                  {chips.length}
-                </span>
-              )}
-            </button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-72 p-4 grid gap-3">
-            {children}
-            {chips.length > 0 && onClearAll && (
-              <button type="button" onClick={onClearAll} className="mt-1 text-sm font-medium text-main-600 hover:text-main-700">
-                Limpiar filtros
-              </button>
-            )}
-          </PopoverContent>
-        </Popover>
+    {/* Todo en una línea: buscador (crece) + controles + Filtros (ícono) */}
+    <div className="flex items-center gap-2">
+      <div className="min-w-0 flex-1">
+        <SearchInput value={search} onChange={onSearch} placeholder={searchPlaceholder} />
       </div>
+      {right}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            title="Filtros"
+            className="relative inline-flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-2.5 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+          >
+            <SlidersHorizontal size={16} />
+            {chips.length > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-main-600 px-1 text-[10px] font-semibold text-white">
+                {chips.length}
+              </span>
+            )}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-72 p-4 grid gap-3">
+          {children}
+          {chips.length > 0 && onClearAll && (
+            <button type="button" onClick={onClearAll} className="mt-1 text-sm font-medium text-main-600 hover:text-main-700">
+              Limpiar filtros
+            </button>
+          )}
+        </PopoverContent>
+      </Popover>
     </div>
 
     {chips.length > 0 && (

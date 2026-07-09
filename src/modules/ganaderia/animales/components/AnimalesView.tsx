@@ -177,11 +177,7 @@ export const AnimalesView = () => {
         }
       />
 
-      <ScrollArea
-        onScrollEnd={
-          mode === 'infinite' && list.hasNext && !list.isFetchingNext ? list.fetchNext : undefined
-        }
-      >
+      <ScrollArea>
         <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
           <FiltersBar
             search={search}
@@ -243,6 +239,9 @@ export const AnimalesView = () => {
             onRowClick={isTrash ? undefined : openEdit}
             selectedKey={!isTrash && drawerOpen ? selected?.id : null}
             loadingMore={mode === 'infinite' && list.isFetchingNext}
+            onReachEnd={
+              mode === 'infinite' && list.hasNext && !list.isFetchingNext ? list.fetchNext : undefined
+            }
           />
 
           {mode === 'paged' ? (
