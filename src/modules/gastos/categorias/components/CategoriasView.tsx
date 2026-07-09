@@ -159,7 +159,7 @@ export const CategoriasView = () => {
         section="GASTOS DEL CAMPO"
         title="Categorías"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <TrashToggle view={view} onChange={setView} />
             {!isTrash && <PrimaryButton onClick={openCreate}>Nueva categoría</PrimaryButton>}
           </div>

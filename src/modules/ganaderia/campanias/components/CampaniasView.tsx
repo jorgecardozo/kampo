@@ -134,7 +134,7 @@ export const CampaniasView = () => {
         section="GANADERÍA"
         title="Campañas de Vacunación"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <TrashToggle view={view} onChange={setView} />
             {!isTrash && <PrimaryButton onClick={() => setLoteOpen(true)}>Nueva campaña</PrimaryButton>}
           </div>

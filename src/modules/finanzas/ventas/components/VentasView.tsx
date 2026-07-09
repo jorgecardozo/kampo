@@ -125,7 +125,7 @@ export const VentasView = () => {
         section="FINANZAS"
         title="Ventas / Ingresos"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <TrashToggle view={view} onChange={setView} />
             {!isTrash && <PrimaryButton onClick={openCreate}>Registrar venta</PrimaryButton>}
           </div>

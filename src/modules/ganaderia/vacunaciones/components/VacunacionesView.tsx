@@ -178,18 +178,22 @@ export const VacunacionesView = () => {
         section="GANADERÍA"
         title="Vacunaciones"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <TrashToggle view={view} onChange={setView} />
             {!isTrash && (
               <>
                 <button
                   type="button"
                   onClick={() => setLoteOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-main-600 px-4 py-2 text-sm font-semibold text-main-600 hover:bg-main-50 dark:hover:bg-gray-800"
+                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-main-600 px-3 sm:px-4 py-2 text-sm font-semibold text-main-600 hover:bg-main-50 dark:hover:bg-gray-800"
                 >
-                  Vacunar en lote
+                  <span className="sm:hidden">Lote</span>
+                  <span className="hidden sm:inline">Vacunar en lote</span>
                 </button>
-                <PrimaryButton onClick={openCreate}>Registrar vacunación</PrimaryButton>
+                <PrimaryButton onClick={openCreate}>
+                  <span className="sm:hidden">Registrar</span>
+                  <span className="hidden sm:inline">Registrar vacunación</span>
+                </PrimaryButton>
               </>
             )}
           </div>
