@@ -81,18 +81,29 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
   // baja de cierto ancho, se cierra. Detecta intención horizontal para no pisar
   // el scroll vertical del menú.
   const sideRef = useRef(null)
-  const gesture = useRef({ x: 0, y: 0, w: 0, mode: null })
-  const [dragW, setDragW] = useState(null) // ancho en px durante el arrastre (null = por defecto)
+  const gesture = useRef({ x: 0, y: 0, w: 0, mode: null, id: null })
+  const movedRef = useRef(false) // hubo arrastre (para no cerrar al tocar el overlay)
+  const [sideW, setSideW] = useState(null) // ancho fijado por el usuario (px) o null = por defecto
+  const [dragW, setDragW] = useState(null) // ancho en vivo durante el arrastre
   const [isResizing, setIsResizing] = useState(false)
 
+  // Recuerda el ancho elegido entre aperturas.
   useEffect(() => {
-    if (isOpen) { setDragW(null); setIsResizing(false) }
-  }, [isOpen])
+    const saved = Number(localStorage.getItem('sidebarWidth'))
+    if (saved && saved > 40) setSideW(saved)
+  }, [])
 
-  // Gesto sobre TODA la sidebar: si el arrastre es horizontal, angosta (y cierra
-  // si baja del 50%); si es vertical, deja scrollear el menú.
+  const fullWidth = () =>
+    typeof window !== 'undefined' ? Math.round(window.innerWidth * 0.85) : 0
+  const closeAt = () =>
+    typeof window !== 'undefined' ? Math.max(72, Math.round(window.innerWidth * 0.12)) : 72
+
+  // Gesto (funciona sobre la sidebar Y sobre el overlay): arrastre horizontal =
+  // redimensiona y queda en ese ancho; muy angosto = cierra; vertical = scroll.
   const onSideDown = (e) => {
-    gesture.current = { x: e.clientX, y: e.clientY, w: sideRef.current?.offsetWidth || 0, mode: null, id: e.pointerId }
+    movedRef.current = false
+    const w = sideRef.current?.offsetWidth || sideW || fullWidth()
+    gesture.current = { x: e.clientX, y: e.clientY, w, mode: null, id: e.pointerId }
   }
   const onSideMove = (e) => {
     const g = gesture.current
@@ -100,26 +111,32 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
     const dx = e.clientX - g.x
     const dy = e.clientY - g.y
     if (g.mode === null) {
-      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return
       if (Math.abs(dx) > Math.abs(dy)) {
         g.mode = 'resize'
+        movedRef.current = true
         setIsResizing(true)
-        try { sideRef.current?.setPointerCapture?.(g.id) } catch {}
+        try { e.currentTarget.setPointerCapture?.(g.id) } catch {}
       } else {
         g.mode = 'scroll'
         return
       }
     }
     if (g.mode !== 'resize') return
-    const newW = Math.max(0, Math.min(g.w, g.w + dx)) // dx negativo = más angosta
+    const newW = Math.max(0, Math.min(fullWidth(), g.w + dx)) // dx negativo = más angosta
     setDragW(newW)
   }
   const onSideUp = () => {
     const g = gesture.current
-    if (g.mode === 'resize' && g.w) {
-      if (dragW != null && dragW < g.w * 0.5) setIsOpen(false)
-      else setDragW(null)
+    if (g.mode === 'resize' && dragW != null) {
+      if (dragW < closeAt()) {
+        setIsOpen(false)
+      } else {
+        setSideW(dragW) // queda en el ancho elegido
+        try { localStorage.setItem('sidebarWidth', String(dragW)) } catch {}
+      }
     }
+    setDragW(null)
     setIsResizing(false)
     gesture.current = { x: 0, y: 0, w: 0, mode: null, id: null }
   }
@@ -441,8 +458,12 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
-            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 touch-none"
+            onPointerDown={onSideDown}
+            onPointerMove={onSideMove}
+            onPointerUp={onSideUp}
+            onPointerCancel={onSideUp}
+            onClick={() => { if (!movedRef.current) setIsOpen(false) }}
           />
         )}
       </AnimatePresence>
@@ -460,7 +481,7 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
             onPointerMove={onSideMove}
             onPointerUp={onSideUp}
             onPointerCancel={onSideUp}
-            style={dragW != null ? { width: dragW } : undefined}
+            style={dragW != null ? { width: dragW } : sideW != null ? { width: sideW } : undefined}
             className={`fixed top-0 left-0 flex h-screen w-[85%] flex-col overflow-hidden bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60] ${
               isResizing ? '' : 'transition-[width] duration-200'
             }`}
