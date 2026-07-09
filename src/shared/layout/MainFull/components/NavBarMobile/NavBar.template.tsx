@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect } from 'react'
+import React, { useState, createContext, useEffect, useRef } from 'react'
 import { FiCamera } from 'react-icons/fi'
 import { BsFillAwardFill } from "react-icons/bs";
 import { FaCreditCard } from "react-icons/fa6";
@@ -76,6 +76,48 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
   const [openSections, setOpenSections] = useState({})
   const toggleSection = (title, defaultOpen) =>
     setOpenSections((p) => ({ ...p, [title]: !(title in p ? p[title] : defaultOpen) }))
+
+  // Resize por gesto: arrastrando hacia la izquierda la sidebar se angosta; si
+  // baja de cierto ancho, se cierra. Detecta intención horizontal para no pisar
+  // el scroll vertical del menú.
+  const sideRef = useRef(null)
+  const gesture = useRef({ x: 0, y: 0, w: 0, mode: null })
+  const [dragW, setDragW] = useState(null) // ancho en px durante el arrastre (null = por defecto)
+  const [isResizing, setIsResizing] = useState(false)
+
+  useEffect(() => {
+    if (isOpen) { setDragW(null); setIsResizing(false) }
+  }, [isOpen])
+
+  const onSideDown = (e) => {
+    gesture.current = { x: e.clientX, y: e.clientY, w: sideRef.current?.offsetWidth || 0, mode: null }
+  }
+  const onSideMove = (e) => {
+    const g = gesture.current
+    if (!g.w) return
+    const dx = e.clientX - g.x
+    const dy = e.clientY - g.y
+    if (g.mode === null) {
+      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) { g.mode = 'scroll'; return }
+      if (Math.abs(dx) > 8) {
+        g.mode = 'resize'
+        setIsResizing(true)
+        try { e.currentTarget.setPointerCapture(e.pointerId) } catch {}
+      } else return
+    }
+    if (g.mode !== 'resize') return
+    const newW = Math.max(0, Math.min(g.w, g.w + dx)) // dx negativo = más angosta
+    setDragW(newW)
+  }
+  const onSideUp = () => {
+    const g = gesture.current
+    if (g.mode === 'resize') {
+      if (dragW != null && dragW < g.w * 0.5) setIsOpen(false)
+      else setDragW(null)
+    }
+    setIsResizing(false)
+    gesture.current = { x: 0, y: 0, w: 0, mode: null }
+  }
 
   const router = useRouter()
   const isMobile = useMediaQuery('(max-width: 768px)')
@@ -404,20 +446,21 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={sideRef}
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            // Arrastrable: seguís el dedo hacia la izquierda; si soltás pasando
-            // el umbral (o con impulso) se esconde, sino vuelve a su lugar.
-            drag="x"
-            dragDirectionLock
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={{ left: 0.9, right: 0 }}
-            onDragEnd={(_e, info) => {
-              if (info.offset.x < -90 || info.velocity.x < -450) setIsOpen(false)
-            }}
-            className="fixed top-0 left-0 h-screen w-[85%] touch-pan-y bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60]"
+            // Resize por gesto: arrastrando a la izquierda se angosta; si baja del
+            // 50% del ancho, se cierra.
+            onPointerDown={onSideDown}
+            onPointerMove={onSideMove}
+            onPointerUp={onSideUp}
+            onPointerCancel={onSideUp}
+            style={dragW != null ? { width: dragW } : undefined}
+            className={`fixed top-0 left-0 h-screen w-[85%] touch-pan-y overflow-hidden bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60] ${
+              isResizing ? '' : 'transition-[width] duration-200'
+            }`}
           >
             {/* Header: Logo y botón de cerrar - misma altura que barra superior */}
             <div className="relative flex items-center justify-center h-16 px-5">
