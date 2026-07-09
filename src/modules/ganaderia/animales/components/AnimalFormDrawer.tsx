@@ -65,6 +65,16 @@ export const AnimalFormDrawer = ({ open, onClose, initial, items, onNavigate }: 
 
   const set = (k: keyof typeof form, v: any) => setForm((p) => ({ ...p, [k]: v }))
 
+  // El sexo se deduce de la categoría (Ternero/a es ambiguo → no se toca).
+  const sexoPorCategoria: Record<string, 'Hembra' | 'Macho'> = {
+    Vaca: 'Hembra',
+    Vaquillona: 'Hembra',
+    Toro: 'Macho',
+    Novillo: 'Macho',
+  }
+  const setCategoria = (v: string) =>
+    setForm((p) => ({ ...p, categoria: v, ...(sexoPorCategoria[v] ? { sexo: sexoPorCategoria[v] } : {}) }))
+
   const handleArchive = async () => {
     if (!initial) return
     try {
@@ -131,7 +141,7 @@ export const AnimalFormDrawer = ({ open, onClose, initial, items, onNavigate }: 
         <input className={inputClass} value={form.nombre} onChange={(e) => set('nombre', e.target.value)} />
       </Field>
       <Field label="Categoría">
-        <FilterSelect value={form.categoria} onChange={(v) => set('categoria', v)} options={toOpts(CATEGORIAS)} />
+        <FilterSelect value={form.categoria} onChange={setCategoria} options={toOpts(CATEGORIAS)} />
       </Field>
       <Field label="Sexo">
         <FilterSelect value={form.sexo} onChange={(v) => set('sexo', v)} options={toOpts(SEXOS)} />
