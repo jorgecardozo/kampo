@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Columns3 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -16,6 +16,7 @@ export type Column<T> = {
   align?: 'left' | 'right' | 'center'
   hideable?: boolean // default true; false = siempre visible y no aparece en el toggle
   className?: string
+  truncate?: boolean // recorta con "…" (para textos largos: nombre, descripción)
   render: (row: T) => ReactNode
 }
 
@@ -73,8 +74,8 @@ export function ColumnsToggle<T>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">
-          Columnas <ChevronDown size={16} />
+        <button className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-2.5 sm:px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">
+          <Columns3 size={16} /> <span className="hidden sm:inline">Columnas</span> <ChevronDown size={16} className="hidden sm:inline" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
@@ -161,7 +162,11 @@ export function DataTable<T>({
                   >
                     {cols.map((c) => (
                       <Td key={c.key} className={`${alignClass(c.align)} ${c.className ?? ''}`}>
-                        {c.render(r)}
+                        {c.truncate ? (
+                          <span className="block max-w-[120px] sm:max-w-[200px] truncate">{c.render(r)}</span>
+                        ) : (
+                          c.render(r)
+                        )}
                       </Td>
                     ))}
                   </tr>

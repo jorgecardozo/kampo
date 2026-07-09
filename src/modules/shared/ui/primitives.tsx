@@ -179,7 +179,7 @@ export const Th = ({ children, className = '' }: { children?: ReactNode; classNa
 )
 
 export const Td = ({ children, className = '' }: { children?: ReactNode; className?: string }) => (
-  <td className={`px-3 py-2.5 sm:px-4 sm:py-3 text-gray-700 dark:text-gray-200 ${className}`}>{children}</td>
+  <td className={`whitespace-nowrap px-2.5 py-2 sm:px-4 sm:py-3 text-gray-700 dark:text-gray-200 ${className}`}>{children}</td>
 )
 
 // Chip / badge de estado.

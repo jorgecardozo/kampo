@@ -31,7 +31,7 @@ const estadoTone: Record<EstadoAnimal, 'green' | 'gray' | 'red'> = {
 
 const buildColumns = (precioDe: (cat: string) => number): Column<Animal>[] => [
   { key: 'caravana', label: 'Caravana', hideable: false, className: 'font-semibold', render: (a) => a.caravana || '—' },
-  { key: 'nombre', label: 'Nombre', render: (a) => a.nombre || '-' },
+  { key: 'nombre', label: 'Nombre', truncate: true, render: (a) => a.nombre || '-' },
   { key: 'categoria', label: 'Categoría', render: (a) => a.categoria },
   { key: 'raza', label: 'Raza', render: (a) => a.raza },
   { key: 'sexo', label: 'Sexo', render: (a) => a.sexo },
@@ -182,7 +182,7 @@ export const AnimalesView = () => {
           mode === 'infinite' && list.hasNext && !list.isFetchingNext ? list.fetchNext : undefined
         }
       >
-        <Panel className="p-4 flex flex-1 flex-col min-h-0">
+        <Panel className="p-2.5 sm:p-4 flex flex-1 flex-col min-h-0">
           <FiltersBar
             search={search}
             onSearch={setSearch}

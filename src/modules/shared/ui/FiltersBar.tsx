@@ -50,8 +50,8 @@ type Props = {
 
 // Barra de filtros: búsqueda + botón "Filtros (N)" con panel + chips de activos.
 export const FiltersBar = ({ search, onSearch, searchPlaceholder, children, chips = [], onClearAll, right }: Props) => (
-  <div className="mb-4 flex flex-col gap-3">
-    <div className="flex flex-col md:flex-row md:items-center gap-3">
+  <div className="mb-2 sm:mb-4 flex flex-col gap-2 sm:gap-3">
+    <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-3">
       <SearchInput value={search} onChange={onSearch} placeholder={searchPlaceholder} />
       <div className="md:ml-auto flex flex-wrap items-center gap-2 sm:gap-3">
         {right}

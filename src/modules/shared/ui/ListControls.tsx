@@ -11,7 +11,7 @@ export const ModeToggle = ({
 }) => {
   const base = 'inline-flex items-center justify-center px-2.5 py-2 transition-colors'
   return (
-    <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden">
+    <div className="hidden sm:inline-flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden">
       <button
         type="button"
         title="Paginado"
