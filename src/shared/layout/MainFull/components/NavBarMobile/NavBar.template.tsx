@@ -484,7 +484,7 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
             onPointerUp={onSideUp}
             onPointerCancel={onSideUp}
             style={dragW != null ? { width: dragW } : sideW != null ? { width: sideW } : undefined}
-            className={`fixed top-0 left-0 flex h-screen w-[85%] flex-col overflow-hidden bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60] ${
+            className={`fixed top-0 left-0 flex h-[100dvh] w-[85%] flex-col overflow-hidden bg-white dark:bg-gray-800 text-black dark:text-white shadow-2xl z-[60] ${
               isResizing ? '' : 'transition-[width] duration-200'
             }`}
           >
@@ -698,8 +698,8 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
               </div>
             </div>
 
-            {/* Footer fijo: tema + cerrar sesión */}
-            <div className="border-t border-gray-200 dark:border-slate-700 px-5 py-3 space-y-2">
+            {/* Footer fijo: tema + cerrar sesión (con safe-area de iOS) */}
+            <div className="shrink-0 border-t border-gray-200 dark:border-slate-700 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500 dark:text-slate-300">Tema</span>
                 <ThemeToggle />
