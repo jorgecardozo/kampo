@@ -10,14 +10,14 @@ const Document = () => (
         rel="stylesheet"
       />
       {/* Tema: por defecto claro; aplica oscuro solo si el usuario lo eligió antes.
-          (No usamos prefers-color-scheme para que el default sea siempre claro.) */}
+          Por defecto OSCURO; aplica claro solo si el usuario lo eligió antes. */}
       <script
         dangerouslySetInnerHTML={{
           __html: `try {
-            if (localStorage.getItem('theme') === 'dark') {
-              document.documentElement.classList.add('dark');
-            } else {
+            if (localStorage.getItem('theme') === 'light') {
               document.documentElement.classList.remove('dark');
+            } else {
+              document.documentElement.classList.add('dark');
             }
           } catch (e) {}`,
         }}

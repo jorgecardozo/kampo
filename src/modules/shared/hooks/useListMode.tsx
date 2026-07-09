@@ -3,12 +3,12 @@ import type { ListMode } from './useListQuery'
 
 type Ctx = { mode: ListMode; setMode: (m: ListMode) => void }
 
-const ListModeContext = createContext<Ctx>({ mode: 'paged', setMode: () => {} })
+const ListModeContext = createContext<Ctx>({ mode: 'infinite', setMode: () => {} })
 
 // Provider del modo de listado (paginado | scroll). Es global: al cambiarlo en
-// una tabla, aplica a todas. Se persiste en localStorage.
+// una tabla, aplica a todas. Por defecto scroll infinito; se persiste en localStorage.
 export const ListModeProvider = ({ children }: { children: ReactNode }) => {
-  const [mode, setModeState] = useState<ListMode>('paged')
+  const [mode, setModeState] = useState<ListMode>('infinite')
 
   useEffect(() => {
     const saved = localStorage.getItem('listMode')

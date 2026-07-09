@@ -191,9 +191,6 @@ export const AnimalesView = () => {
             onClearAll={clearAll}
             right={
               <>
-                <span className="text-sm text-gray-400 whitespace-nowrap">
-                  {list.total} {isTrash ? 'archivados' : 'animales'}
-                </span>
                 <ModeToggle mode={mode} onChange={setMode} />
                 <ColumnsToggle columns={columns} isVisible={isVisible} toggle={toggle} />
               </>

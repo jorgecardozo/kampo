@@ -129,10 +129,16 @@ export function DataTable<T>({
   const cols = columns.filter((c) => isVisible(c.key))
   const showEmpty = !isLoading && rows.length === 0 && !loadingMore
 
-  // El contenedor crece (flex-1) para llenar el alto disponible del panel;
-  // así el estado vacío queda centrado vertical y la tabla no flota corta.
+  // Con filas: contenedor de altura automática → el scroll vertical lo maneja
+  // el ScrollArea (así funciona el scroll infinito). Vacío: crece (flex-1) para
+  // centrar el estado vacío. (overflow-x-auto sobre un flex-1 capturaba el scroll
+  // vertical y rompía el infinito en mobile.)
   return (
-    <div className="flex flex-1 flex-col overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+    <div
+      className={`${
+        showEmpty ? 'flex flex-1 flex-col' : ''
+      } overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700`}
+    >
       <table className="w-full text-sm">
         <thead className="bg-main-600 text-left text-xs uppercase tracking-wide text-white">
           <tr>
