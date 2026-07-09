@@ -21,7 +21,7 @@ export const ScrollArea = ({
   }
   return (
     <div
-      className="no-scrollbar flex flex-1 flex-col overflow-y-auto overscroll-contain pt-4"
+      className="no-scrollbar flex flex-1 flex-col min-h-0 overflow-y-auto overscroll-contain pt-4"
       onScroll={handleScroll}
     >
       {children}

@@ -148,18 +148,19 @@ export function DataTable<T>({
     return () => obs.disconnect()
   }, [onReachEnd, rows.length])
 
-  // Con filas: contenedor de altura automática → el scroll vertical lo maneja
-  // el ScrollArea (así funciona el scroll infinito). Vacío: crece (flex-1) para
-  // centrar el estado vacío. (overflow-x-auto sobre un flex-1 capturaba el scroll
-  // vertical y rompía el infinito en mobile.)
+  // Con filas: la tabla scrollea DENTRO de su recuadro (altura acotada por el
+  // layout flex) → el encabezado queda fijo (sticky) y el infinito lo detecta el
+  // centinela. Vacío: crece (flex-1) para centrar el estado vacío.
   return (
     <div
       className={`${
-        showEmpty ? 'flex flex-1 flex-col' : ''
-      } no-scrollbar overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700`}
+        showEmpty
+          ? 'flex flex-1 flex-col'
+          : 'flex flex-1 flex-col min-h-0 overflow-auto overscroll-contain'
+      } no-scrollbar rounded-xl border border-gray-200 dark:border-gray-700`}
     >
       <table className="w-full text-sm">
-        <thead className="bg-main-600 text-left text-xs uppercase tracking-wide text-white">
+        <thead className="sticky top-0 z-10 bg-main-600 text-left text-xs uppercase tracking-wide text-white">
           <tr>
             {cols.map((c) => (
               <Th key={c.key} className={alignClass(c.align)}>
