@@ -48,10 +48,12 @@ import {
   Search,
   X,
   Menu,
+  LogOut,
 } from 'lucide-react'
 import { useEffectOnce } from 'hooks/useEffectOnce'
 import { Separator } from 'components/ui/separator'
 import { TextBodySm } from 'components/Text'
+import { ThemeToggle } from 'components/ThemeToggle'
 import { usePermisos } from '@shared/context/PermisosProvider'
 import { useUser } from '@auth0/nextjs-auth0/client'
 
@@ -694,6 +696,21 @@ const NavBarTemplate = ({ isOpen, setIsOpen }) => {
                 </motion.div>
               ))}
               </div>
+            </div>
+
+            {/* Footer fijo: tema + cerrar sesión */}
+            <div className="border-t border-gray-200 dark:border-slate-700 px-5 py-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500 dark:text-slate-300">Tema</span>
+                <ThemeToggle />
+              </div>
+              <a
+                href="/api/auth/logout"
+                className="flex items-center gap-x-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-gray-700"
+              >
+                <LogOut size={18} />
+                <span>Cerrar sesión</span>
+              </a>
             </div>
           </motion.div>
         )}
