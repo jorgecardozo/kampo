@@ -1,10 +1,11 @@
+/* Los @import deben ir antes que cualquier otra regla (CSS spec / Turbopack). */
+@import './fonts.css';
+@import './custom-toast.css';
+@import './datepicker.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import 'fonts.css';
-@import './custom-toast.css';
-@import 'datepicker.css';
 
 /* Custom Components */
 /* @import '../../layouts/Main/components/NavBar.css'; */
