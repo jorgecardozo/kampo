@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import { useDebounce } from 'use-debounce'
@@ -60,7 +60,7 @@ export const CampaniasView = () => {
   const [loteOpen, setLoteOpen] = useState(false)
   const [editing, setEditing] = useState<Campania | null>(null)
   const { isVisible, toggle } = useColumnVisibility()
-  const router = useRouter()
+  const searchParams = useSearchParams()
   const { view, setView, isTrash, purgeTarget, setPurgeTarget } = useTrashState<CampaniaConTotal>()
   const { mutateAsync: restore } = useRestoreCampania()
   const { mutateAsync: purge, isPending: purging } = usePurgeCampania()
@@ -119,14 +119,13 @@ export const CampaniasView = () => {
 
   // Deep-link desde una vacunación: ?ver=<campaniaId> abre esa campaña.
   useEffect(() => {
-    if (!router.isReady) return
-    const id = router.query.ver
+    const id = searchParams.get('ver')
     if (id) {
       fetchCampaniaById(String(id)).then((c) => c && setEditing(c))
-      router.replace('/ganaderia/campanias', undefined, { shallow: true })
+      window.history.replaceState(null, '', '/ganaderia/campanias')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady, router.query.ver])
+  }, [searchParams])
 
   return (
     <ModuleScreen>

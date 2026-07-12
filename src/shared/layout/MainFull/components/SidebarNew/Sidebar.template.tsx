@@ -37,7 +37,7 @@ import { FaDollarSign, FaShopify } from 'react-icons/fa6'
 import { FaPeopleGroup } from 'react-icons/fa6'
 import { motion, AnimatePresence } from 'framer-motion'
 import { paths } from 'lib/utils/paths'
-import { useRouter } from 'next/router'
+import { useRouter, usePathname } from 'next/navigation'
 import { useSelectors } from 'store/selectors'
 import { ROLES } from 'lib/utils/constants'
 import { useMediaQuery } from 'hooks/useMediaQuery'
@@ -88,6 +88,7 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
   const [avatarError, setAvatarError] = useState(false)
 
   const router = useRouter()
+  const pathname = usePathname()
   const isMobile = useMediaQuery('(max-width: 768px)')
   const { subirImagen, setUserData, obtenerUsuario } = useActions()
 
@@ -508,7 +509,7 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
 
   // Sección que contiene la ruta actual (abierta por defecto en el acordeón).
   const activeSectionTitle = menuSections.find((s) =>
-    s.items.some((it) => it.path === router.pathname)
+    s.items.some((it) => it.path === pathname)
   )?.title
 
   const obtenerUsuarioData = async (id: number) => {
@@ -765,7 +766,7 @@ const SidebarTemplate = ({ isOpen, setIsOpen }) => {
                 <ul>
                   {section.items.map((item, index) => {
                     const itemId = `${section.title}-${item.title}-${index}`
-                    const isActive = item.path ? router.pathname === item.path : false
+                    const isActive = item.path ? pathname === item.path : false
                     return (
                     <motion.li
                       key={itemId}

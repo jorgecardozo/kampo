@@ -83,14 +83,21 @@
       "contexts/*": [
         "shared/contexts/*"
       ]
-    }
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "src/pages/_document.jsx",
-    "src/pages/_app.jsx"
+    "src/pages/_app.jsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

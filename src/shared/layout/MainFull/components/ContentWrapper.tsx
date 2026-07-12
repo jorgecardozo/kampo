@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import { ContentWrapperProps } from '../types'
 import clsx from 'clsx'
 

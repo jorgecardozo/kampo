@@ -1,10 +1,11 @@
 // Libraries
-import { useRouter } from 'next/router'
+import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import { paths } from 'lib/utils/paths'
 
 export const useValidate = () => {
   const router = useRouter()
+  const pathname = usePathname()
 
   const pathsToValidate: Record<string, () => boolean> = {
     [paths.root]: () => true,
@@ -14,8 +15,8 @@ export const useValidate = () => {
   }
 
   useEffect(() => {
-    if (pathsToValidate[router.pathname] && !pathsToValidate[router.pathname]()) {
+    if (pathsToValidate[pathname] && !pathsToValidate[pathname]()) {
       router.push(paths.dashboard.path)
     }
-  }, [router.pathname])
+  }, [pathname])
 }

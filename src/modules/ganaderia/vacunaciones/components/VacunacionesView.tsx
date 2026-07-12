@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useSearchParams } from 'next/navigation'
 import { useDebounce } from 'use-debounce'
 import PageHeader from '@modules/shared/ui/PageHeader'
 import { Badge, ModuleScreen, Panel, PrimaryButton, ScrollArea, SearchInput } from '@modules/shared/ui/primitives'
@@ -59,7 +59,7 @@ export const VacunacionesView = () => {
   const [presetAnimalId, setPresetAnimalId] = useState<string | undefined>(undefined)
   const [loteOpen, setLoteOpen] = useState(false)
   const { isVisible, toggle } = useColumnVisibility()
-  const router = useRouter()
+  const searchParams = useSearchParams()
   const { view, setView, isTrash, purgeTarget, setPurgeTarget } = useTrashState<Vacunacion>()
   const { mutateAsync: restore } = useRestoreVacunacion()
   const { mutateAsync: purge, isPending: purging } = usePurgeVacunacion()
@@ -153,13 +153,13 @@ export const VacunacionesView = () => {
   //  ?nuevoAnimal=<id> → abre el alta con ese animal precargado
   //  ?editar=<id>      → abre esa vacunación para editar
   useEffect(() => {
-    if (!router.isReady) return
-    const { nuevoAnimal, editar } = router.query
+    const nuevoAnimal = searchParams.get('nuevoAnimal')
+    const editar = searchParams.get('editar')
     if (nuevoAnimal) {
       setPresetAnimalId(String(nuevoAnimal))
       setSelected(null)
       setOpen(true)
-      router.replace('/ganaderia/vacunaciones', undefined, { shallow: true })
+      window.history.replaceState(null, '', '/ganaderia/vacunaciones')
     } else if (editar) {
       fetchVacunacionById(String(editar)).then((v) => {
         if (v) {
@@ -167,10 +167,10 @@ export const VacunacionesView = () => {
           setOpen(true)
         }
       })
-      router.replace('/ganaderia/vacunaciones', undefined, { shallow: true })
+      window.history.replaceState(null, '', '/ganaderia/vacunaciones')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady, router.query.nuevoAnimal, router.query.editar])
+  }, [searchParams])
 
   return (
     <ModuleScreen>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { Layers } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { Drawer } from '@modules/shared/ui/Drawer'

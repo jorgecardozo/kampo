@@ -1,6 +1,5 @@
 // Libraries
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 
 // Hooks
 import { useSession } from 'hooks/useSession'
