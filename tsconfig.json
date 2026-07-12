@@ -26,20 +26,17 @@
       "@shared/*": [
         "shared/*"
       ],
-      "@modules/*": [
-        "modules/*"
+      "@features/*": [
+        "features/*"
+      ],
+      "@widgets/*": [
+        "widgets/*"
       ],
       "components": [
         "shared/components"
       ],
       "components/*": [
         "shared/components/*"
-      ],
-      "layouts": [
-        "shared/layout"
-      ],
-      "layouts/*": [
-        "shared/layout/*"
       ],
       "lib": [
         "shared/lib"

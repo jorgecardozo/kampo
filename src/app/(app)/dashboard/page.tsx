@@ -1,6 +1,6 @@
 "use client";
 
-import { GeneralDashboardView } from '@modules/finanzas/dashboard'
+import { GeneralDashboardView } from '@features/finanzas/dashboard'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { CamposView } from '@modules/configuracion/campos'
+import { CamposView } from '@features/configuracion/campos'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 

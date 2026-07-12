@@ -1,6 +1,6 @@
 "use client";
 
-import { VeterinariosView } from '@modules/ganaderia/veterinarios'
+import { VeterinariosView } from '@features/ganaderia/veterinarios'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 

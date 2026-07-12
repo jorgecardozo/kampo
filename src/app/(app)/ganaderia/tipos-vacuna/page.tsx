@@ -1,6 +1,6 @@
 "use client";
 
-import { TiposVacunaView } from '@modules/ganaderia/tipos-vacuna'
+import { TiposVacunaView } from '@features/ganaderia/tipos-vacuna'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 

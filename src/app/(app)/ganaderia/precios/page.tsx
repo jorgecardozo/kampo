@@ -1,6 +1,6 @@
 "use client";
 
-import { PreciosView } from '@modules/ganaderia/precios'
+import { PreciosView } from '@features/ganaderia/precios'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 

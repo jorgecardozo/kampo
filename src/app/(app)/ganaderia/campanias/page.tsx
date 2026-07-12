@@ -1,6 +1,6 @@
 "use client";
 
-import { CampaniasView } from '@modules/ganaderia/campanias'
+import { CampaniasView } from '@features/ganaderia/campanias'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 

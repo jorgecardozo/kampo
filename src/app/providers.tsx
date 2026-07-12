@@ -5,7 +5,7 @@ import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { ModalProvider } from "components/Modal";
 import { Bootstrap } from "components/Bootstap";
 import { ReactQueryProvider } from "lib/queryClient";
-import { ListModeProvider } from "@modules/shared/hooks/useListMode";
+import { ListModeProvider } from "@features/shared/hooks/useListMode";
 import { CampoProvider } from "@shared/context/CampoProvider";
 import { PermisosProvider } from "@shared/context/PermisosProvider";
 import { AppProvider } from "store";

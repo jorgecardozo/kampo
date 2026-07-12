@@ -1,6 +1,6 @@
 "use client";
 
-import { CategoriasView } from '@modules/gastos/categorias'
+import { CategoriasView } from '@features/gastos/categorias'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 

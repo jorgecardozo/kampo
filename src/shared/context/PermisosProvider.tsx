@@ -1,7 +1,7 @@
 import { createContext, useContext, ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useUser } from '@auth0/nextjs-auth0/client'
-import { Rol, fetchMiPermiso } from '@modules/configuracion/usuarios/miembros.api'
+import { Rol, fetchMiPermiso } from '@features/configuracion/usuarios/miembros.api'
 
 type PermisosCtx = {
   rol: Rol | null

@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { GiCow } from 'react-icons/gi'
 import { FaMoneyBillWave, FaSyringe, FaArrowRight, FaCalendarAlt, FaTags } from 'react-icons/fa'
-import PageHeader from '@modules/shared/ui/PageHeader'
-import { ModuleScreen, Panel, ScrollArea } from '@modules/shared/ui/primitives'
+import PageHeader from '@features/shared/ui/PageHeader'
+import { ModuleScreen, Panel, ScrollArea } from '@features/shared/ui/primitives'
 import { paths } from 'lib/utils/paths'
 
 const accesos = [

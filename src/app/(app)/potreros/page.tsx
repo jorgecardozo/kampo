@@ -1,6 +1,6 @@
 "use client";
 
-import { PotrerosView } from '@modules/configuracion/potreros'
+import { PotrerosView } from '@features/configuracion/potreros'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 

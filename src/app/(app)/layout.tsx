@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import Layout from "layouts/MainFull/components/Layout";
+import Layout from "@widgets/MainFull/components/Layout";
 
 // Layout de las páginas autenticadas: sidebar + navbar (reemplaza el patrón
 // getLayout = mainLayout de Pages Router). El Suspense da el límite que

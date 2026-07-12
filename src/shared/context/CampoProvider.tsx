@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Campo, fetchCampos } from '@modules/configuracion/campos/campos.api'
+import { Campo, fetchCampos } from '@features/configuracion/campos/campos.api'
 import { setCampoActual } from 'lib/campoActual'
 
 type CampoCtx = {

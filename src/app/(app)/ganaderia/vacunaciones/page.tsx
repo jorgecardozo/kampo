@@ -1,6 +1,6 @@
 "use client";
 
-import { VacunacionesView } from '@modules/ganaderia/vacunaciones'
+import { VacunacionesView } from '@features/ganaderia/vacunaciones'
 import { DEFAULT_TITLE } from 'lib/utils/constants'
 import { paths } from 'lib/utils/paths'
 
