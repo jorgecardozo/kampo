@@ -8,7 +8,8 @@ const REQUIRE_AUTH = process.env.NODE_ENV === "production";
 
 /**
  * Protege las páginas de la app: si no hay sesión Auth0 (GET /api/auth/me → 204),
- * redirige a /api/auth/login volviendo a la página actual. Evita el estado
+ * redirige a la pantalla de ingreso propia (/ingresar). Desde ahí el usuario toca
+ * "Ingresar" y recién ahí salta al Universal Login de Auth0. Evita el estado
  * confuso donde la UI mock-first mostraba el dashboard "vacío" sin avisar que
  * faltaba iniciar sesión (sin sesión → sin token Supabase → RLS bloquea los datos).
  */
@@ -25,8 +26,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         if (r.status === 200) {
           setReady(true);
         } else {
-          const returnTo = window.location.pathname + window.location.search;
-          window.location.href = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
+          window.location.href = "/ingresar";
         }
       })
       .catch(() => {
