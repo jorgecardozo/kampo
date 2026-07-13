@@ -1,11 +1,18 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import jwt from "jsonwebtoken";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Emite un JWT válido para Supabase a partir de la sesión de Auth0 (App Router).
-export async function GET() {
+//
+// Importante: llamamos `getSession(req, res)` con req/res EXPLÍCITOS. La forma
+// sin argumentos usa `next/headers` -> `cookies()`, que en Next 15/16 es async;
+// como @auth0/nextjs-auth0 v3 lo lee de forma síncrona, tiraba error y esta ruta
+// devolvía 500 (sin sesión -> sin token -> RLS bloqueaba todo -> "no hay datos").
+// Pasando el `req` (NextRequest) usa el path basado en request, que sí funciona.
+export async function GET(req: NextRequest) {
   try {
-    const session = await getSession();
+    const res = new NextResponse();
+    const session = await getSession(req, res);
     const email = session?.user?.email as string | undefined;
     if (!session || !email) return NextResponse.json({ error: "no session" }, { status: 401 });
 

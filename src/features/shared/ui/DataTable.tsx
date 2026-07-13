@@ -155,7 +155,7 @@ export function DataTable<T>({
     <div
       className={`${
         showEmpty
-          ? 'flex flex-1 flex-col'
+          ? 'flex flex-1 flex-col overflow-hidden'
           : 'flex flex-1 flex-col min-h-0 overflow-auto overscroll-contain'
       } no-scrollbar rounded-xl border border-gray-200 dark:border-gray-700`}
     >
