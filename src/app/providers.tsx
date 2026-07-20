@@ -1,6 +1,6 @@
 "use client";
 
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, Bounce } from "react-toastify";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { ModalProvider } from "components/Modal";
 import { Bootstrap } from "components/Bootstap";
@@ -18,7 +18,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <AppProvider session={null}>
           <ModalProvider>
             <Bootstrap>
-              <ToastContainer />
+              {/* Props explícitas: react-toastify v9 define `transition` (y otros)
+                  vía defaultProps, que ya no se aplican en React moderno → el toast
+                  renderizaba `createElement(undefined)` y tiraba React #130 en prod.
+                  Pasando `transition={Bounce}` (y el resto) se evita el crash. */}
+              <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                pauseOnHover
+                pauseOnFocusLoss
+                closeOnClick
+                draggable
+                theme="light"
+                transition={Bounce}
+              />
               <PermisosProvider>
                 <CampoProvider>
                   <ListModeProvider>{children}</ListModeProvider>
