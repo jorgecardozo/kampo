@@ -8,7 +8,7 @@ import { Field, inputClass } from '@features/shared/ui/FormModal'
 import FilterSelect from '@features/shared/ui/FilterSelect'
 import { EmptyRow, LoadingRow, Table, Td, Th } from '@features/shared/ui/primitives'
 import { formatDate, toISODate } from '@features/shared/lib/format'
-import { CATEGORIAS, COLORES, ESTADOS, POTREROS, RAZAS, SEXOS } from '../../shared/constants'
+import { CATEGORIAS, COLORES, ESTADOS, POTREROS, RAZAS, SEXOS, pesoEstimado } from '../../shared/constants'
 import type { Animal } from '../../shared/types'
 import { useDuenos } from '../../duenos/useDuenos'
 import { fetchVacunacionesByAnimal } from '../../vacunaciones/vacunaciones.api'
@@ -154,6 +154,11 @@ export const AnimalFormDrawer = ({ open, onClose, initial, items, onNavigate }: 
       </Field>
       <Field label="Peso (kg)">
         <input type="number" className={inputClass} value={form.pesoKg} onChange={(e) => set('pesoKg', e.target.value)} />
+        {!isEdit && !Number(form.pesoKg) && (
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            Si lo dejás en 0, se estima en ~{pesoEstimado(form.categoria)} kg según la categoría. Lo actualizás cuando lo peses.
+          </p>
+        )}
       </Field>
       <Field label="Potrero">
         <FilterSelect value={form.potrero} onChange={(v) => set('potrero', v)} options={toOpts(POTREROS)} />

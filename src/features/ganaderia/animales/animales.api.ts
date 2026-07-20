@@ -2,6 +2,7 @@ import { supabase } from 'lib/supabase'
 import { getCampoActual } from 'lib/campoActual'
 import { type Page } from '@features/shared/lib/pagination'
 import type { Animal } from '../shared/types'
+import { pesoEstimado } from '../shared/constants'
 
 // Valor especial para filtrar los animales SIN dueño asignado.
 export const SIN_DUENO = '__sin_dueno__'
@@ -135,6 +136,9 @@ export const createAnimal = async (data: Omit<Animal, 'id'>): Promise<Animal> =>
   const row = toRow(data)
   // Sin caravana → se asigna un código correlativo automático (V-001, V-002…).
   if (!row.caravana) row.caravana = await nextAutoCaravana()
+  // Sin peso → se estima según la categoría, así el capital (peso × precio/kg) no
+  // queda en 0 hasta pesarlo. Después se edita con el peso real.
+  if (!row.peso_kg) row.peso_kg = pesoEstimado(data.categoria)
   const campo = getCampoActual()
   if (campo) row.campo_id = campo
   const { data: created, error } = await supabase.from('animales').insert(row).select().single()
