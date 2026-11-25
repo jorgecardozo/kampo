@@ -8,7 +8,7 @@ import { Field, inputClass } from '@features/shared/ui/FormModal'
 import FilterSelect from '@features/shared/ui/FilterSelect'
 import { EmptyRow, LoadingRow, Table, Td, Th } from '@features/shared/ui/primitives'
 import { formatDate, toISODate } from '@features/shared/lib/format'
-import { CATEGORIAS, COLORES, ESTADOS, POTREROS, RAZAS, SEXOS, pesoEstimado } from '../../shared/constants'
+import { CATEGORIAS, COLORES, ESTADOS, NOTAS_EDAD, POTREROS, RAZAS, SEXOS, pesoEstimado } from '../../shared/constants'
 import type { Animal } from '../../shared/types'
 import { useDuenos } from '../../duenos/useDuenos'
 import { fetchVacunacionesByAnimal } from '../../vacunaciones/vacunaciones.api'
@@ -177,6 +177,14 @@ export const AnimalFormDrawer = ({ open, onClose, initial, items, onNavigate }: 
       </Field>
       <Field label="Fecha de ingreso">
         <input type="date" className={inputClass} value={form.fechaIngreso} onChange={(e) => set('fechaIngreso', e.target.value)} />
+      </Field>
+      <Field label="Clasificación de edad">
+        <FilterSelect
+          value={form.notaEdad || ''}
+          onChange={(v) => set('notaEdad', v || undefined)}
+          placeholder="Sin clasificar"
+          options={[{ value: '', label: 'Sin clasificar' }, ...toOpts(NOTAS_EDAD)]}
+        />
       </Field>
       <Field label="Estado">
         <FilterSelect value={form.estado} onChange={(v) => set('estado', v)} options={toOpts(ESTADOS)} />

@@ -12,6 +12,7 @@ export type AnimalesFilters = {
   categoria?: string
   sexo?: string
   estado?: string
+  notaEdad?: string
   dueno?: string
   dateFrom?: string
   dateTo?: string
@@ -34,6 +35,7 @@ const toAnimal = (r: Row): Animal => ({
   dueno: r.dueno ?? '',
   estado: r.estado,
   fechaIngreso: r.fecha_ingreso ?? '',
+  notaEdad: r.nota_edad ?? undefined,
   observaciones: r.observaciones ?? undefined,
 })
 
@@ -51,6 +53,7 @@ const toRow = (a: Partial<Animal>): Row => {
   if (a.dueno !== undefined) r.dueno = a.dueno
   if (a.estado !== undefined) r.estado = a.estado
   if (a.fechaIngreso !== undefined) r.fecha_ingreso = a.fechaIngreso || null
+  if (a.notaEdad !== undefined) r.nota_edad = a.notaEdad || null
   if (a.observaciones !== undefined) r.observaciones = a.observaciones || null
   return r
 }
@@ -66,6 +69,8 @@ const applyFilters = (q: any, f: AnimalesFilters) => {
   if (f.categoria) q = q.eq('categoria', f.categoria)
   if (f.sexo) q = q.eq('sexo', f.sexo)
   if (f.estado) q = q.eq('estado', f.estado)
+  if (f.notaEdad === 'Sin nota') q = q.is('nota_edad', null)
+  else if (f.notaEdad) q = q.eq('nota_edad', f.notaEdad)
   if (f.dueno === SIN_DUENO) q = q.or('dueno.is.null,dueno.eq.')
   else if (f.dueno) q = q.eq('dueno', f.dueno)
   if (f.dateFrom) q = q.gte('fecha_ingreso', f.dateFrom)

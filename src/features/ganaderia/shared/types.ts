@@ -26,6 +26,7 @@ export type Animal = {
   dueno: string
   estado: EstadoAnimal
   fechaIngreso: string
+  notaEdad?: string
   observaciones?: string
 }
 

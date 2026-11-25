@@ -13,7 +13,7 @@ import { useListMode } from '@features/shared/hooks/useListMode'
 import { InfiniteFooter, ModeToggle, Pagination } from '@features/shared/ui/ListControls'
 import { formatCurrency, formatDate } from '@features/shared/lib/format'
 import { DateRangeInputs, FilterField, FiltersBar } from '@features/shared/ui/FiltersBar'
-import { CATEGORIAS, ESTADOS, SEXOS } from '../../shared/constants'
+import { CATEGORIAS, ESTADOS, NOTAS_EDAD, SEXOS } from '../../shared/constants'
 import type { Animal, EstadoAnimal } from '../../shared/types'
 import { useDuenos } from '../../duenos/useDuenos'
 import { usePrecios } from '../../precios/usePrecios'
@@ -35,6 +35,7 @@ const buildColumns = (precioDe: (cat: string) => number): Column<Animal>[] => [
   { key: 'categoria', label: 'Categoría', render: (a) => a.categoria },
   { key: 'raza', label: 'Raza', render: (a) => a.raza },
   { key: 'sexo', label: 'Sexo', render: (a) => a.sexo },
+  { key: 'notaEdad', label: 'Edad', render: (a) => a.notaEdad || '—' },
   { key: 'peso', label: 'Peso', render: (a) => `${a.pesoKg} kg` },
   { key: 'valor', label: 'Valor', className: 'font-medium', render: (a) => formatCurrency(a.pesoKg * precioDe(a.categoria)) },
   { key: 'potrero', label: 'Potrero', render: (a) => a.potrero },
@@ -49,6 +50,7 @@ export const AnimalesView = () => {
   const [categoria, setCategoria] = useState('')
   const [sexo, setSexo] = useState('')
   const [estado, setEstado] = useState('')
+  const [notaEdad, setNotaEdad] = useState('')
   const [dueno, setDueno] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -118,8 +120,8 @@ export const AnimalesView = () => {
   const { isVisible, toggle } = useColumnVisibility()
 
   const filters = useMemo(
-    () => ({ search: debounced, categoria, sexo, estado, dueno, dateFrom: dateFrom || undefined, dateTo: dateTo || undefined }),
-    [debounced, categoria, sexo, estado, dueno, dateFrom, dateTo]
+    () => ({ search: debounced, categoria, sexo, estado, notaEdad, dueno, dateFrom: dateFrom || undefined, dateTo: dateTo || undefined }),
+    [debounced, categoria, sexo, estado, notaEdad, dueno, dateFrom, dateTo]
   )
   useEffect(() => setPage(1), [filters, mode, view])
 
@@ -128,12 +130,13 @@ export const AnimalesView = () => {
     if (categoria) c.push({ key: 'cat', label: categoria, onClear: () => setCategoria('') })
     if (sexo) c.push({ key: 'sex', label: sexo, onClear: () => setSexo('') })
     if (estado) c.push({ key: 'est', label: estado, onClear: () => setEstado('') })
+    if (notaEdad) c.push({ key: 'ned', label: notaEdad, onClear: () => setNotaEdad('') })
     if (dueno) c.push({ key: 'due', label: dueno === SIN_DUENO ? 'Sin dueño' : `Dueño: ${dueno}`, onClear: () => setDueno('') })
     if (dateFrom || dateTo) c.push({ key: 'fec', label: `Ingreso: ${dateFrom || '…'} → ${dateTo || '…'}`, onClear: () => { setDateFrom(''); setDateTo('') } })
     return c
   }, [categoria, sexo, estado, dueno, dateFrom, dateTo])
 
-  const clearAll = () => { setCategoria(''); setSexo(''); setEstado(''); setDueno(''); setDateFrom(''); setDateTo('') }
+  const clearAll = () => { setCategoria(''); setSexo(''); setEstado(''); setNotaEdad(''); setDueno(''); setDateFrom(''); setDateTo('') }
 
   const list = useListQuery<Animal>({
     key: ['ganaderia.animales', view, filters],
@@ -144,7 +147,7 @@ export const AnimalesView = () => {
     pageSize: PAGE_SIZE,
   })
 
-  const hasFilters = !!(debounced || categoria || sexo || estado || dueno || dateFrom || dateTo)
+  const hasFilters = !!(debounced || categoria || sexo || estado || notaEdad || dueno || dateFrom || dateTo)
 
   // Mensaje/acción del estado vacío según contexto.
   const emptyState = isTrash
@@ -216,6 +219,14 @@ export const AnimalesView = () => {
                 onChange={setEstado}
                 placeholder="Todos"
                 options={[{ value: '', label: 'Todos los estados' }, ...ESTADOS.map((s) => ({ value: s, label: s }))]}
+              />
+            </FilterField>
+            <FilterField label="Edad">
+              <FilterSelect
+                value={notaEdad}
+                onChange={setNotaEdad}
+                placeholder="Todas"
+                options={[{ value: '', label: 'Todas' }, ...NOTAS_EDAD.map((n) => ({ value: n, label: n }))]}
               />
             </FilterField>
             <FilterField label="Dueño">
