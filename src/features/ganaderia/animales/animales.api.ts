@@ -13,6 +13,7 @@ export type AnimalesFilters = {
   sexo?: string
   estado?: string
   notaEdad?: string
+  sinCaravana?: boolean
   dueno?: string
   dateFrom?: string
   dateTo?: string
@@ -71,6 +72,7 @@ const applyFilters = (q: any, f: AnimalesFilters) => {
   if (f.estado) q = q.eq('estado', f.estado)
   if (f.notaEdad === 'Sin nota') q = q.is('nota_edad', null)
   else if (f.notaEdad) q = q.eq('nota_edad', f.notaEdad)
+  if (f.sinCaravana) q = q.is('caravana', null)
   if (f.dueno === SIN_DUENO) q = q.or('dueno.is.null,dueno.eq.')
   else if (f.dueno) q = q.eq('dueno', f.dueno)
   if (f.dateFrom) q = q.gte('fecha_ingreso', f.dateFrom)

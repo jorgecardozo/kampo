@@ -51,6 +51,7 @@ export const AnimalesView = () => {
   const [sexo, setSexo] = useState('')
   const [estado, setEstado] = useState('')
   const [notaEdad, setNotaEdad] = useState('')
+  const [sinCaravana, setSinCaravana] = useState(false)
   const [dueno, setDueno] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
@@ -120,8 +121,8 @@ export const AnimalesView = () => {
   const { isVisible, toggle } = useColumnVisibility()
 
   const filters = useMemo(
-    () => ({ search: debounced, categoria, sexo, estado, notaEdad, dueno, dateFrom: dateFrom || undefined, dateTo: dateTo || undefined }),
-    [debounced, categoria, sexo, estado, notaEdad, dueno, dateFrom, dateTo]
+    () => ({ search: debounced, categoria, sexo, estado, notaEdad, sinCaravana: sinCaravana || undefined, dueno, dateFrom: dateFrom || undefined, dateTo: dateTo || undefined }),
+    [debounced, categoria, sexo, estado, notaEdad, sinCaravana, dueno, dateFrom, dateTo]
   )
   useEffect(() => setPage(1), [filters, mode, view])
 
@@ -131,12 +132,13 @@ export const AnimalesView = () => {
     if (sexo) c.push({ key: 'sex', label: sexo, onClear: () => setSexo('') })
     if (estado) c.push({ key: 'est', label: estado, onClear: () => setEstado('') })
     if (notaEdad) c.push({ key: 'ned', label: notaEdad, onClear: () => setNotaEdad('') })
+    if (sinCaravana) c.push({ key: 'scv', label: 'Sin caravana', onClear: () => setSinCaravana(false) })
     if (dueno) c.push({ key: 'due', label: dueno === SIN_DUENO ? 'Sin dueño' : `Dueño: ${dueno}`, onClear: () => setDueno('') })
     if (dateFrom || dateTo) c.push({ key: 'fec', label: `Ingreso: ${dateFrom || '…'} → ${dateTo || '…'}`, onClear: () => { setDateFrom(''); setDateTo('') } })
     return c
   }, [categoria, sexo, estado, dueno, dateFrom, dateTo])
 
-  const clearAll = () => { setCategoria(''); setSexo(''); setEstado(''); setNotaEdad(''); setDueno(''); setDateFrom(''); setDateTo('') }
+  const clearAll = () => { setCategoria(''); setSexo(''); setEstado(''); setNotaEdad(''); setSinCaravana(false); setDueno(''); setDateFrom(''); setDateTo('') }
 
   const list = useListQuery<Animal>({
     key: ['ganaderia.animales', view, filters],
@@ -147,7 +149,7 @@ export const AnimalesView = () => {
     pageSize: PAGE_SIZE,
   })
 
-  const hasFilters = !!(debounced || categoria || sexo || estado || notaEdad || dueno || dateFrom || dateTo)
+  const hasFilters = !!(debounced || categoria || sexo || estado || notaEdad || sinCaravana || dueno || dateFrom || dateTo)
 
   // Mensaje/acción del estado vacío según contexto.
   const emptyState = isTrash
@@ -227,6 +229,14 @@ export const AnimalesView = () => {
                 onChange={setNotaEdad}
                 placeholder="Todas"
                 options={[{ value: '', label: 'Todas' }, ...NOTAS_EDAD.map((n) => ({ value: n, label: n }))]}
+              />
+            </FilterField>
+            <FilterField label="Caravana">
+              <FilterSelect
+                value={sinCaravana ? 'sin' : ''}
+                onChange={(v) => setSinCaravana(v === 'sin')}
+                placeholder="Todas"
+                options={[{ value: '', label: 'Todas' }, { value: 'sin', label: 'Sin caravana' }]}
               />
             </FilterField>
             <FilterField label="Dueño">
