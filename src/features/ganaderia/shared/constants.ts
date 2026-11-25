@@ -15,7 +15,7 @@ export const PESO_ESTIMADO_POR_CATEGORIA: Record<CategoriaAnimal, number> = {
 export const pesoEstimado = (categoria: string): number =>
   PESO_ESTIMADO_POR_CATEGORIA[categoria as CategoriaAnimal] ?? 0
 export const ESTADOS: EstadoAnimal[] = ['Activo', 'Vendido', 'Muerto']
-export const NOTAS_EDAD = ['Vieja', 'Grande', 'Nueva', 'Joven'] as const
+export const NOTAS_EDAD = ['Bebé', 'Joven', 'Nueva', 'Grande', 'Vieja'] as const
 export const VIAS: ViaAplicacion[] = ['Subcutánea', 'Intramuscular', 'Oral', 'Intranasal']
 
 export const RAZAS = [
